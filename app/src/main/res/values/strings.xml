@@ -2,4 +2,7 @@
     <string name="app_name">Mobile Student</string>
     <string name="audio_tab_label">Audio</string>
     <string name="video_tab_label">Video</string>
+    <string name="last_updated">Last updated:</string>
+    <string name="note_summary">This is my first time coding a notes app. It\'ll be a pretty simple one, too.</string>
+    <string name="note_title">First Note.</string>
 </resources>
