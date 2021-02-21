@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Mobile Student</string>
+    <string name="audio_tab_label">Audio</string>
+    <string name="video_tab_label">Video</string>
 </resources>
