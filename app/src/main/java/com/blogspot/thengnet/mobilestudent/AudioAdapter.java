@@ -32,10 +32,6 @@ public class AudioAdapter extends ArrayAdapter<Audio> {
         TextView tvLength = (TextView) convertView.findViewById(R.id.tv_media_length);
         tvLength.setText(currentAudio.getAudioLength());
 
-//        TextView tvPath = (TextView) convertView.findViewById(R.id.tv_media_path);
-//        tvPath.setText(currentAudio.getAudioPath());
-
         return convertView;
-//        return super.getView(position, convertView, parent);
     }
 }

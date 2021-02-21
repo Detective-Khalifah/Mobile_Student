@@ -4,17 +4,13 @@ public class Audio {
 
     private String mAudioTitle;
     private String mAudioLength;
-    private String mAudioDisplayName;
-    private String mAudioPath;
 
     public Audio () {
     }
 
-    public Audio (String mAudioTitle, String mAudioDisplayName, String mAudioLength/*, String mAudioPath*/) {
+    public Audio (String mAudioTitle, String mAudioLength) {
         this.mAudioTitle = mAudioTitle;
         this.mAudioLength = mAudioLength;
-        this.mAudioDisplayName = mAudioDisplayName;
-        this.mAudioPath = mAudioPath;
     }
 
     public String getAudioTitle () {
@@ -25,11 +21,4 @@ public class Audio {
         return mAudioLength;
     }
 
-    public String getAudioDisplayName () {
-        return mAudioDisplayName;
-    }
-
-    public String getAudioPath () {
-        return mAudioPath;
-    }
 }

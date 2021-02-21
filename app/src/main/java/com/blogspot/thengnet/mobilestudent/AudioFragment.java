@@ -39,12 +39,12 @@ public class AudioFragment extends Fragment {
         View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
 
         mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DISPLAY_NAME};
+                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.DISPLAY_NAME};
 
         audioCursor = getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 mAudioTableColumns, mAudioSelection, null, null);
-        
+
         if (audioCursor != null) {
             mAudioFiles = new ArrayList<>();
             audioCursor.moveToFirst();
