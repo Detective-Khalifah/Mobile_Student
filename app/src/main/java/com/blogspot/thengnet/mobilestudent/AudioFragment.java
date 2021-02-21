@@ -21,6 +21,7 @@ public class AudioFragment extends Fragment {
     private String[] mAudioTableColumns;
     private String mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
             MediaStore.Audio.Media.IS_PODCAST;
+    private String mAudioSortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // TODO: present option in preferences
 
     private static Cursor audioCursor;
 
@@ -38,12 +39,12 @@ public class AudioFragment extends Fragment {
                               Bundle savedInstanceState) {
         View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
 
-        mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.DISPLAY_NAME};
+        mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DURATION
+        };
 
         audioCursor = getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                mAudioTableColumns, mAudioSelection, null, null);
+                mAudioTableColumns, mAudioSelection, null, mAudioSortOrder);
 
         if (audioCursor != null) {
             mAudioFiles = new ArrayList<>();
@@ -51,13 +52,11 @@ public class AudioFragment extends Fragment {
 
             do {
                 int nTitle = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-                int nDisp = audioCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
                 int nLength = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
                 mAudioFiles.add(
                     new Audio(
                             audioCursor.getString(nTitle),
-                            audioCursor.getString(nDisp),
                             audioCursor.getString(nLength)
                     )
                 );
