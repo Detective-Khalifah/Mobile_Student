@@ -5,4 +5,5 @@
     <string name="last_updated">Last updated:</string>
     <string name="note_summary">This is my first time coding a notes app. It\'ll be a pretty simple one, too.</string>
     <string name="note_title">First Note.</string>
+    <string name="notes_activity_label">My Notes</string>
 </resources>
