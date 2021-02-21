@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass for video files.
  */
 public class VideoFragment extends Fragment {
 
