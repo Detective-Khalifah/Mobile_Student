@@ -3,14 +3,16 @@ package com.blogspot.thengnet.mobilestudent;
 public class Audio {
 
     private String mAudioTitle;
+    private String mAudioPath;
     private String mAudioLength;
 
     public Audio () {
     }
 
-    public Audio (String mAudioTitle, String mAudioLength) {
-        this.mAudioTitle = mAudioTitle;
-        this.mAudioLength = mAudioLength;
+    public Audio (String theAudioTitle, String theAudioPath, String theAudioLength) {
+        this.mAudioTitle = theAudioTitle;
+        this.mAudioPath = theAudioPath;
+        this.mAudioLength = theAudioLength;
     }
 
     public String getAudioTitle () {
@@ -21,4 +23,7 @@ public class Audio {
         return mAudioLength;
     }
 
+    public String getAudioPath () {
+        return mAudioPath;
+    }
 }
