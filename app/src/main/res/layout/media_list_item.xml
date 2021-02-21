@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_media_thumbnail"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_star_big_off" />
+
+    <TextView
+        android:id="@+id/tv_media_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-condensed"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColorHighlight="#000000"
+        android:textStyle="normal"
+        app:layout_constraintLeft_toRightOf="@id/img_media_thumbnail"
+        app:layout_constraintStart_toEndOf="@+id/img_media_thumbnail"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Beethoven's 5th Symphony Orchestra by Bach? Or is it Beethoven himself?" />
+
+    <TextView
+        android:id="@+id/tv_media_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/tv_media_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_media_title"
+        android:textStyle="italic|bold"
+        android:textAppearance="?android:textAppearanceSmall"
+        tools:text="19:19:19"/>
+
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_media_length"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="sans-serif-light"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textStyle="bold"
+        tools:text="/data/media/0/Music/"/>
+
+</android.support.constraint.ConstraintLayout>
