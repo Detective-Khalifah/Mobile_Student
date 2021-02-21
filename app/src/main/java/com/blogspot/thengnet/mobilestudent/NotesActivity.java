@@ -24,7 +24,7 @@ public class NotesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void openMediaActivity(View view) {
+    public void openMediaActivity(View view) {
         startActivity(new Intent(NotesActivity.this, MainActivity.class));
     }
 }
