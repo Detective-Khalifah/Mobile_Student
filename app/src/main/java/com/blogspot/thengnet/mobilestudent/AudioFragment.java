@@ -99,7 +99,7 @@ public class AudioFragment extends Fragment {
         mAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion (MediaPlayer mp) {
-                childrenManager.popBackStack(); Log.v(LOG_TAG, "manager pops");
+                childrenManager.popBackStack();
             }
         });
 
@@ -120,7 +120,7 @@ public class AudioFragment extends Fragment {
             mAudioPlayer.reset();
             try {
                 // change data source to a different file at {@link path}
-                mAudioPlayer.setDataSource(context, path);Log.v(LOG_TAG, "setDatasource");
+                mAudioPlayer.setDataSource(context, path);
 
                 // transition to prepared state
                 mAudioPlayer.prepare();
