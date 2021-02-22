@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,7 @@ public class AudioFragment extends Fragment {
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
                 Audio currentAudio = mAudioFiles.get(position);
                 playAudioFile(getContext(), Uri.parse(currentAudio.getAudioPath()));
+                showControlsFragment();
             }
         });
 
@@ -92,27 +94,36 @@ public class AudioFragment extends Fragment {
         return audioRoot;
     }
 
+    private void showControlsFragment () {
+        Fragment controls = new MediaControlsFragment();
+        FragmentTransaction channel = getChildFragmentManager().beginTransaction();
+        channel.add(R.id.controls_container, controls).commit();
+    }
+
     private boolean playAudioFile (Context context, Uri path) {
         if (mAudioPlayer != null) {
-            Log.v(LOG_TAG, "mAudioPlayer!=null");
+            // reset the {@link MediaPlayer} object
             mAudioPlayer.reset();
             try {
+                // change data source to a different file at {@link path}
                 mAudioPlayer.setDataSource(context, path);
-                Log.v(LOG_TAG, "setDatasource");
+
+                // transition to prepared state
                 mAudioPlayer.prepare();
-                Log.v(LOG_TAG, "prepare");
+
+                // start playing the audio file
                 mAudioPlayer.start();
-                Toast.makeText(getContext(), "Started: " + path.toString(), Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return true;
         }
-        Log.v(LOG_TAG, "mediaPlayer = null");
+
+        // create a new {@link MediaPlayer} obj
         mAudioPlayer = MediaPlayer.create(context, path);
-        Log.v(LOG_TAG, "create");
+
+        // start playing the audio file
         mAudioPlayer.start();
-        Toast.makeText(getContext(), "Started: " + path.toString(), Toast.LENGTH_SHORT).show();
         return false;
     }
 }
