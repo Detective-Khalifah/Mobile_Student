@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,8 @@ public class AudioFragment extends Fragment {
 
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
+    Fragment controlsFragment;
+    FragmentManager childrenManager;
     FragmentTransaction channel;
 
     private String LOG_TAG = AudioFragment.class.getName();
@@ -92,14 +95,23 @@ public class AudioFragment extends Fragment {
             }
         });
 
+        mAudioPlayer = new MediaPlayer();
+        mAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion (MediaPlayer mp) {
+                childrenManager.popBackStack(); Log.v(LOG_TAG, "manager pops");
+            }
+        });
+
         // Inflate the layout for this fragment
         return audioRoot;
     }
 
     private void showControlsFragment () {
-        Fragment controls = new MediaControlsFragment();
-        channel = getChildFragmentManager().beginTransaction();
-        channel.add(R.id.controls_container, controls).commit();
+        controlsFragment = new MediaControlsFragment();
+        childrenManager = getChildFragmentManager();
+        channel = childrenManager.beginTransaction();
+        channel.add(R.id.controls_container, controlsFragment).addToBackStack("co").commit();
     }
 
     private boolean playAudioFile (Context context, Uri path) {
@@ -108,7 +120,7 @@ public class AudioFragment extends Fragment {
             mAudioPlayer.reset();
             try {
                 // change data source to a different file at {@link path}
-                mAudioPlayer.setDataSource(context, path);
+                mAudioPlayer.setDataSource(context, path);Log.v(LOG_TAG, "setDatasource");
 
                 // transition to prepared state
                 mAudioPlayer.prepare();
@@ -120,12 +132,6 @@ public class AudioFragment extends Fragment {
             }
             return true;
         }
-
-        // create a new {@link MediaPlayer} obj
-        mAudioPlayer = MediaPlayer.create(context, path);
-
-        // start playing the audio file
-        mAudioPlayer.start();
         return false;
     }
 }
