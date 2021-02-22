@@ -32,7 +32,7 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
     FragmentManager childrenManager;
     FragmentTransaction channel;
 
-    private String LOG_TAG = AudioFragment.class.getName();
+    private final String LOG_TAG = AudioFragment.class.getName();
     private ArrayList<Audio> mAudioFiles;
     private String[] mAudioTableColumns;
     private String mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
@@ -120,6 +120,8 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
                 .addToBackStack("control_frag")
                 .commit();
     }
+    // TODO: find a way - if any, besides LiveData + ViewModel - to handle click events on the
+    // child fragment's views.
 
     /**
      * Use the @param context of the current activity and @param path of the audio file

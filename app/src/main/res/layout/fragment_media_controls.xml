@@ -11,9 +11,11 @@
         android:id="@+id/tv_track_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:textStyle="bold"
         tools:text="@string/track_title" />
 
     <LinearLayout
@@ -22,29 +24,30 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/tv_track_title">
 
-        <Button
+        <ImageView
             android:id="@+id/btn_prev_track"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="PT"
+            android:src="@drawable/baseline_skip_previous_black_48"
             app:layout_constraintLeft_toLeftOf="parent" />
 
-        <Button
+        <ImageView
             android:id="@+id/btn_play_pause"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="P"
+            android:src="@drawable/baseline_pause_black_48"
             app:layout_constraintLeft_toRightOf="@id/btn_prev_track" />
 
-        <Button
+        <ImageView
             android:id="@+id/btn_next_track"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="NT"
+            android:src="@drawable/baseline_skip_next_black_48"
             app:layout_constraintLeft_toRightOf="@id/btn_play_pause" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
