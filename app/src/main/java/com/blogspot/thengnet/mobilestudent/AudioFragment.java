@@ -27,6 +27,8 @@ public class AudioFragment extends Fragment {
 
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
+    FragmentTransaction channel;
+
     private String LOG_TAG = AudioFragment.class.getName();
     private ArrayList<Audio> mAudioFiles;
     private String[] mAudioTableColumns;
@@ -96,7 +98,7 @@ public class AudioFragment extends Fragment {
 
     private void showControlsFragment () {
         Fragment controls = new MediaControlsFragment();
-        FragmentTransaction channel = getChildFragmentManager().beginTransaction();
+        channel = getChildFragmentManager().beginTransaction();
         channel.add(R.id.controls_container, controls).commit();
     }
 
