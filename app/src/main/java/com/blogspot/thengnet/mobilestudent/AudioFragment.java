@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +23,8 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass for audio files.
  */
-public class AudioFragment extends Fragment {
+public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnErrorListener, AdapterView.OnItemClickListener {
 
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
@@ -61,15 +61,20 @@ public class AudioFragment extends Fragment {
         audioCursor = getContext().getContentResolver().query(mAudioUri,
                 mAudioTableColumns, mAudioSelection, null, mAudioSortOrder);
 
-        if (audioCursor != null) {
-            mAudioFiles = new ArrayList<>();
-            audioCursor.moveToFirst();
+        if (audioCursor != null && audioCursor.getCount() > 0) {
 
-            do {
+            // create the {@link ArrayList<Audio>} object
+            mAudioFiles = new ArrayList<>();
+
+            //
+            for (; audioCursor.moveToNext(); ) {
+
+                // get reference to column indices of interesting columns from the table
                 int nTitle = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
                 int nPath = audioCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
                 int nLength = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
+                // instantiate {@link Audio} objects and add them to the {@link ArrayList<Audio>}
                 mAudioFiles.add(
                         new Audio(
                                 audioCursor.getString(nTitle),
@@ -77,43 +82,51 @@ public class AudioFragment extends Fragment {
                                 audioCursor.getString(nLength)
                         )
                 );
-            } while (audioCursor.moveToNext());
+            }
+
+            // release the device resources after the {@link audioCursor} object has been utilised
             audioCursor.close();
         }
 
+        // create and initialise the ArrayAdapter<Audio> object
+        // to parse the {@link Audio} list item views
         ArrayAdapter<Audio> audioAdapter = new AudioAdapter(getContext(), mAudioFiles);
 
+        // Set the {@link audioAdapter} ArrayAdapter on the ListView
         ListView lvAudio = (ListView) audioRoot.findViewById(R.id.lv_audio);
         lvAudio.setAdapter(audioAdapter);
 
-        lvAudio.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                Audio currentAudio = mAudioFiles.get(position);
-                playAudioFile(getContext(), Uri.parse(currentAudio.getAudioPath()));
-                showControlsFragment();
-            }
-        });
+        lvAudio.setOnItemClickListener(this);
 
+        // instantiate the {@link mAudioPlayer} object
         mAudioPlayer = new MediaPlayer();
-        mAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion (MediaPlayer mp) {
-                childrenManager.popBackStack();
-            }
-        });
+
+        // register callback methods for the {@link mAudioPlayer} object
+        mAudioPlayer.setOnCompletionListener(this);
+        mAudioPlayer.setOnErrorListener(this);
 
         // Inflate the layout for this fragment
         return audioRoot;
     }
 
+    /**
+     * Show the {@link MediaControlsFragment} child fragment when an audio file is played
+     */
     private void showControlsFragment () {
         controlsFragment = new MediaControlsFragment();
         childrenManager = getChildFragmentManager();
         channel = childrenManager.beginTransaction();
-        channel.add(R.id.controls_container, controlsFragment).addToBackStack("co").commit();
+        channel.add(R.id.controls_container, controlsFragment)
+                .addToBackStack("control_frag")
+                .commit();
     }
 
+    /**
+     * Use the @param context of the current activity and @param path of the audio file
+     * to play it.
+     * @return true when mAudioPlayer has been initialised -- left the Idle State prior
+     * otherwise false.
+     */
     private boolean playAudioFile (Context context, Uri path) {
         if (mAudioPlayer != null) {
             // reset the {@link MediaPlayer} object
@@ -133,5 +146,33 @@ public class AudioFragment extends Fragment {
             return true;
         }
         return false;
+    }
+
+    /**
+     * A callback method to handle {@link Audio} file completions.
+     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
+     */
+    @Override
+    public void onCompletion (MediaPlayer mp) {
+        childrenManager.popBackStack();
+    }
+
+    @Override
+    public boolean onError (MediaPlayer mp, int what, int extra) {
+        return false;
+    }
+
+    /**
+     * A callback method that takes the @param parent {@link AdapterView} object,
+     * the list item @param view,
+     * @param position of the list item view in the list view,
+     * the int @param id of the view
+     * that has been clicked on.
+     */
+    @Override
+    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+        Audio currentAudio = mAudioFiles.get(position);
+        playAudioFile(getContext(), Uri.parse(currentAudio.getAudioPath()));
+        showControlsFragment();
     }
 }
