@@ -14,7 +14,7 @@ public class NoteDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_CREATION_STATEMENT = "CREATE TABLE " + NoteContract.TABLE_NAME
             + " ( " + NoteEntry._ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
             NoteEntry.COLUMN_NOTE_TITLE + " TEXT NOT NULL, " +
-            NoteEntry.COLUMN_NOTE_BODY + " TEXT NOT NULL, " +
+            NoteEntry.COLUMN_NOTE_CONTENT + " TEXT NOT NULL, " +
             NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE + " TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP " +
             ");";
 

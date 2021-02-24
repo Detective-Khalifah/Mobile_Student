@@ -26,7 +26,7 @@ public final class NoteContract {
         /**
          * Content of the note: Type - TEXT.
          */
-        public static final String COLUMN_NOTE_BODY = "body";
+        public static final String COLUMN_NOTE_CONTENT = "content";
 
         /**
          * Date and time the note was last updated: Type - TEXT.
