@@ -10,4 +10,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="track_title">Beethoven\'s 5th Symphony</string>
     <string name="menu_save">Save</string>
+    <string name="note_editor_successful_save">Note saved!</string>
+    <string name="note_editor_unsuccessful_save">Note could note be saved...</string>
 </resources>

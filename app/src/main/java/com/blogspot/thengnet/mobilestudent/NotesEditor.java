@@ -16,7 +16,6 @@ import java.util.Date;
 public class NotesEditor extends AppCompatActivity {
 
     TextInputEditText editTitle, editContent;
-    String title, content;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -51,19 +50,16 @@ public class NotesEditor extends AppCompatActivity {
 
     private void saveNote() {
 
-        title = editTitle.getText().toString();
-        content = editContent.getText().toString();
-
         ContentValues values = new ContentValues();
-        values.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, title);
-        values.put(NoteContract.NoteEntry.COLUMN_NOTE_CONTENT, content);
+        values.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, editTitle.getText().toString().trim());
+        values.put(NoteContract.NoteEntry.COLUMN_NOTE_CONTENT, editContent.getText().toString().trim());
         values.put(NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE, String.valueOf(new Date()));
 
         Uri ins = getContentResolver().insert(NoteContract.NoteEntry.CONTENT_URI, values);
         if (ins != null)
-            Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Data successfully entered!", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.editor_snackbar_frame), getString(R.string.note_editor_successful_save), Snackbar.LENGTH_SHORT).show();
         else
-            Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Data not entered!", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.editor_snackbar_frame), getString(R.string.note_editor_unsuccessful_save), Snackbar.LENGTH_SHORT).show();
 
     }
 }
