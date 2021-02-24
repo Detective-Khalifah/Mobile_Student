@@ -1,10 +1,16 @@
 package com.blogspot.thengnet.mobilestudent.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public final class NoteContract {
 
     public static final String TABLE_NAME = "notes";
+
+    public static final String SCHEMA = "content://";
+    public static final String CONTENT_AUTHORITY = "com.blogspot.thengnet.mobilestudent";
+    public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEMA + CONTENT_AUTHORITY);
+    public static final String NOTES_PATH = "notes";
 
     /**
      * A private constructor to prevent instantiation of the contract class.
@@ -12,6 +18,8 @@ public final class NoteContract {
     private NoteContract () {}
 
     public static final class NoteEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, NOTES_PATH);
 
         /**
          * ID column of the database: Type - TEXT.
