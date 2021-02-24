@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.blogspot.thengnet.mobilestudent.data.NoteDbHelper;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 public class NotesActivity extends AppCompatActivity {
 
     private ArrayList<Note> mNotes;
+
+    private NoteDbHelper mNoteDbHelper;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -37,6 +41,7 @@ public class NotesActivity extends AppCompatActivity {
         ListView notesList = (ListView) findViewById(R.id.notes_list);
         notesList.setAdapter(notesAdapter);
 
+        mNoteDbHelper = new NoteDbHelper(this);
     }
 
     @Override
