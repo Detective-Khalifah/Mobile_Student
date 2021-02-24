@@ -7,7 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
 
 public class NoteProvider extends ContentProvider {
 
@@ -51,7 +50,7 @@ public class NoteProvider extends ContentProvider {
                         null, null, sortOrder);
                 return table;
             default:
-                throw new IllegalArgumentException("Content URI does is unknown!" + uri);
+                throw new IllegalArgumentException("Content URI is unknown!" + uri);
         }
     }
 
@@ -122,7 +121,8 @@ public class NoteProvider extends ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
 
-    private int updateNote (Uri uri, ContentValues updateValues, String whereClause, String[] whereArg) {
+    private int updateNote (Uri uri, ContentValues updateValues, String whereClause,
+                            String[] whereArg) {
         if (updateValues.containsKey(NoteContract.NoteEntry.COLUMN_NOTE_TITLE)) {
             String noteTitle = updateValues.getAsString(NoteContract.NoteEntry.COLUMN_NOTE_TITLE);
             if (noteTitle == null || noteTitle.equals(""))
@@ -139,7 +139,8 @@ public class NoteProvider extends ContentProvider {
                 throw new IllegalArgumentException("Note's \"Last Updated Time\" passed, but as a null value!");
         }
 
-        int rowsUpdated = mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME, updateValues, whereClause, whereArg);
+        int rowsUpdated = mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME,
+                updateValues, whereClause, whereArg);
         return rowsUpdated;
     }
 }
