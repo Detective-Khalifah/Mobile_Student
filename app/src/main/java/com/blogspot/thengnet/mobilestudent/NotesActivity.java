@@ -1,7 +1,7 @@
 package com.blogspot.thengnet.mobilestudent;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,13 +12,14 @@ import com.blogspot.thengnet.mobilestudent.data.NoteDbHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class NotesActivity extends AppCompatActivity {
 
     private ArrayList<Note> mNotes;
 
     private NoteDbHelper mNoteDbHelper;
+
+    private FloatingActionButton fabNewNote;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -42,6 +43,14 @@ public class NotesActivity extends AppCompatActivity {
         notesList.setAdapter(notesAdapter);
 
         mNoteDbHelper = new NoteDbHelper(this);
+        
+        fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
+        fabNewNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                startActivity(new Intent(NotesActivity.this, NotesEditor.class));
+            }
+        });
     }
 
     @Override
