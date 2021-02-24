@@ -61,9 +61,9 @@ public class NotesEditor extends AppCompatActivity {
 
         Uri ins = getContentResolver().insert(NoteContract.NoteEntry.CONTENT_URI, values);
         if (ins != null)
-            Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Data successfully entered!", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Data successfully entered!", Snackbar.LENGTH_SHORT).show();
         else
-            Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Data not entered!", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Data not entered!", Snackbar.LENGTH_SHORT).show();
 
     }
 }
