@@ -25,7 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/baseline_add_circle_white_36"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
