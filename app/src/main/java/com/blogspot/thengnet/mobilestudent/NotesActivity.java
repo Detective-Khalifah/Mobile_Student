@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
+import com.blogspot.thengnet.mobilestudent.data.NotesViewer;
 
 import java.util.ArrayList;
 
@@ -43,8 +44,10 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Note " +
-                        ContentUris.withAppendedId(NoteContract.NoteEntry.CONTENT_URI, id) +
                         " clicked", Snackbar.LENGTH_SHORT).show();
+                startActivity(new Intent(NotesActivity.this, NotesViewer.class)
+                        .setData(ContentUris.withAppendedId(
+                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
             }
         });
 
