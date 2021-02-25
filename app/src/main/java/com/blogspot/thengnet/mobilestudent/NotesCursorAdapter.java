@@ -11,15 +11,14 @@ import android.widget.TextView;
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
 
 public class NotesCursorAdapter extends CursorAdapter {
-    
+
     public NotesCursorAdapter (Context context, Cursor c) {
         super(context, c, 0);
     }
 
     @Override
     public View newView (Context context, Cursor cursor, ViewGroup parent) {
-        LayoutInflater.from(context).inflate(R.layout.notes_list_item, parent, false);
-        return null;
+        return LayoutInflater.from(context).inflate(R.layout.notes_list_item, parent, false);
     }
 
     @Override
