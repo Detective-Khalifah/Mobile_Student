@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NotesAdapter extends ArrayAdapter<Note> {
 
@@ -30,7 +29,7 @@ public class NotesAdapter extends ArrayAdapter<Note> {
         TextView tvNoteSummary = (TextView) convertView.findViewById(R.id.tv_note_summary);
         tvNoteSummary.setText(currentNote.getNoteBody());
 
-        TextView tvDateUpdated = (TextView) convertView.findViewById(R.id.tv_last_update);
+        TextView tvDateUpdated = (TextView) convertView.findViewById(R.id.tv_note_last_update);
         tvDateUpdated.append(" " + currentNote.getDateUpdated());
 
         return convertView;

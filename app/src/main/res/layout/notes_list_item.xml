@@ -37,7 +37,7 @@
         tools:text="@string/note_summary" />
 
     <TextView
-        android:id="@+id/tv_last_update"
+        android:id="@+id/tv_note_last_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
