@@ -1,23 +1,27 @@
 package com.blogspot.thengnet.mobilestudent;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.Loader;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
-import com.blogspot.thengnet.mobilestudent.data.NoteDbHelper;
 
 import java.util.ArrayList;
 
-public class NotesActivity extends AppCompatActivity {
+public class NotesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private ArrayList<Note> mNotes;
 
@@ -32,8 +36,19 @@ public class NotesActivity extends AppCompatActivity {
 
         ListView notesList = (ListView) findViewById(R.id.notes_list);
 
-        mNoteCursorAdapter = new NotesCursorAdapter(this, getRows());
+        mNoteCursorAdapter = new NotesCursorAdapter(this, null);
         notesList.setAdapter(mNoteCursorAdapter);
+
+        notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Note " +
+                        ContentUris.withAppendedId(NoteContract.NoteEntry.CONTENT_URI, id) +
+                        " clicked", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        getSupportLoaderManager().initLoader(105, null, this);
 
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
         fabNewNote.setOnClickListener(new View.OnClickListener() {
@@ -70,35 +85,27 @@ public class NotesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private Cursor getRows () {
+    public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
+        String[] projection = {
+                NoteContract.NoteEntry._ID,
+                NoteContract.NoteEntry.COLUMN_NOTE_TITLE,
+                NoteContract.NoteEntry.COLUMN_NOTE_CONTENT,
+                NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE
+        };
+        String whereClause = null;
+        String[] whereArgs = null;
 
-        Cursor existentNotes = getContentResolver().query(NoteContract.NoteEntry.CONTENT_URI, null, null, null, null);
-        int totalRows = -2;
+        return new CursorLoader(this, NoteContract.NoteEntry.CONTENT_URI,
+                projection, whereClause, whereArgs, null);
+    }
 
-        if (existentNotes != null && totalRows != -1) {
-            Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Cursor not empty!", Snackbar.LENGTH_SHORT).show();
-            Log.v(NotesActivity.class.getName(), "Cursor not empty!");
+    @Override
+    public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
+        mNoteCursorAdapter.swapCursor(cursor);
+    }
 
-            totalRows = existentNotes.getCount();
-            existentNotes.moveToFirst();
-
-            for (int i = 0; i < totalRows; i++) {
-                int titleIndex = existentNotes.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_TITLE);
-                int contentIndex = existentNotes.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_CONTENT);
-                int date = existentNotes.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE);
-
-                String title = existentNotes.getString(titleIndex);
-                String content = existentNotes.getString(contentIndex);
-                String noteDate = existentNotes.getString(date);
-
-                Log.v(NotesActivity.class.getName(), "Title: " + title + "\nContent: " + content + "Date: " + noteDate);
-                existentNotes.moveToNext();
-            }
-            return existentNotes;
-        } else {
-            Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Cursor empty!", Snackbar.LENGTH_SHORT).show();
-            Log.v(NotesActivity.class.getName(), "Cursor empty!");
-            return null;
-        }
+    @Override
+    public void onLoaderReset (Loader<Cursor> loader) {
+        mNoteCursorAdapter.swapCursor(null);
     }
 }
