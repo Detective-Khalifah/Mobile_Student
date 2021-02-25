@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
 import com.blogspot.thengnet.mobilestudent.data.NotesViewer;
@@ -23,6 +24,8 @@ import com.blogspot.thengnet.mobilestudent.data.NotesViewer;
 import java.util.ArrayList;
 
 public class NotesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    ProgressBar pbLoadingNotes;
 
     private FloatingActionButton fabNewNote;
 
@@ -33,6 +36,8 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
+        pbLoadingNotes = (ProgressBar) findViewById(R.id.pb_loading_notes);
+
         ListView notesList = (ListView) findViewById(R.id.notes_list);
 
         mNoteCursorAdapter = new NotesCursorAdapter(this, null);
@@ -41,8 +46,7 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
         notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(findViewById(R.id.notes_snackbar_frame), "Note " +
-                        " clicked", Snackbar.LENGTH_SHORT).show();
+                showProgress();
                 startActivity(new Intent(NotesActivity.this, NotesViewer.class)
                         .setData(ContentUris.withAppendedId(
                                 NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
@@ -96,17 +100,27 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
         String whereClause = null;
         String[] whereArgs = null;
 
+        showProgress();
         return new CursorLoader(this, NoteContract.NoteEntry.CONTENT_URI,
                 projection, whereClause, whereArgs, null);
     }
 
     @Override
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
+        hideProgress();
         mNoteCursorAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset (Loader<Cursor> loader) {
         mNoteCursorAdapter.swapCursor(null);
+    }
+
+    private void showProgress () {
+        pbLoadingNotes.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgress () {
+        pbLoadingNotes.setVisibility(View.GONE);
     }
 }
