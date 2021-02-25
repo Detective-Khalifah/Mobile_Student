@@ -84,10 +84,14 @@ public class NoteProvider extends ContentProvider {
         final int deleteType = sUriMatcher.match(uri);
         switch (deleteType) {
             case NOTES:
+                getContext().getContentResolver().notifyChange(uri, null);
                 return mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
             case NOTES_ID:
                 selection = NoteContract.NoteEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                // Notify the cursor loader when the cursor data has changed due to a delete query
+                getContext().getContentResolver().notifyChange(uri, null);
                 return mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("DELETE Content uri unknown!");
@@ -96,8 +100,6 @@ public class NoteProvider extends ContentProvider {
 
     @Override
     public int update (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-
-
         final int UriType = sUriMatcher.match(uri);
         switch (UriType) {
             case NOTES:
@@ -116,6 +118,9 @@ public class NoteProvider extends ContentProvider {
     }
 
     private Uri addNote (Uri uri, ContentValues values) {
+        // Notify the cursor loader when the cursor data has changed when a note is added
+        getContext().getContentResolver().notifyChange(uri, null);
+
         long id = mNoteDbHelper.getWritableDatabase().insert(NoteContract.TABLE_NAME,
                 null, values);
         return ContentUris.withAppendedId(uri, id);
@@ -139,6 +144,8 @@ public class NoteProvider extends ContentProvider {
                 throw new IllegalArgumentException("Note's \"Last Updated Time\" passed, but as a null value!");
         }
 
+        // Notify the cursor loader when the cursor data has changed when a note is updated
+        getContext().getContentResolver().notifyChange(uri, null);
         int rowsUpdated = mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME,
                 updateValues, whereClause, whereArg);
         return rowsUpdated;
