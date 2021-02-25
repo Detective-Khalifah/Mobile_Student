@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
-import com.blogspot.thengnet.mobilestudent.data.NotesViewer;
 
 public class NotesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 

@@ -1,4 +1,4 @@
-package com.blogspot.thengnet.mobilestudent.data;
+package com.blogspot.thengnet.mobilestudent;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
