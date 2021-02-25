@@ -24,8 +24,6 @@ import java.util.ArrayList;
 
 public class NotesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private ArrayList<Note> mNotes;
-
     private FloatingActionButton fabNewNote;
 
     private NotesCursorAdapter mNoteCursorAdapter;
