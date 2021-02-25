@@ -103,18 +103,14 @@ public class NoteProvider extends ContentProvider {
         final int UriType = sUriMatcher.match(uri);
         switch (UriType) {
             case NOTES:
-                updateNote(uri, values, selection, selectionArgs);
-                break;
+                return updateNote(uri, values, selection, selectionArgs);
             case NOTES_ID:
                 selection = NoteContract.NoteEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                updateNote(uri, values, selection, selectionArgs);
-                break;
+                return updateNote(uri, values, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("UPDATE Content URI unknown!");
         }
-
-        return 0;
     }
 
     private Uri addNote (Uri uri, ContentValues values) {
@@ -146,8 +142,7 @@ public class NoteProvider extends ContentProvider {
 
         // Notify the cursor loader when the cursor data has changed when a note is updated
         getContext().getContentResolver().notifyChange(uri, null);
-        int rowsUpdated = mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME,
+        return mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME,
                 updateValues, whereClause, whereArg);
-        return rowsUpdated;
     }
 }
