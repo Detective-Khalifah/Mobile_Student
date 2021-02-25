@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/media_page"
+        android:enabled="true"
+        android:title="@string/media_pages_label"
+        android:icon="@drawable/baseline_perm_media_black_36"/>
+
+    <item
+        android:id="@+id/notes_page"
+        android:enabled="true"
+        android:title="@string/notes_activity_label"
+        android:icon="@drawable/baseline_note_white_36"/>
+    <item
+        android:id="@+id/calculator_page"
+        android:enabled="true"
+        android:title="@string/calculator_activity_label"
+        android:icon="@drawable/baseline_calculate_black_36" />
+</menu>

@@ -3,6 +3,7 @@ package com.blogspot.thengnet.mobilestudent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,8 +29,6 @@ public class NotesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 //        mNotes = new ArrayList<>();
 //        mNotes.add(new Note("Second Note - from Activity",
 //                "This is a test note from NotesActivity. 0... 1... 2... 3... 4... 5....",
@@ -46,6 +45,25 @@ public class NotesActivity extends AppCompatActivity {
             @Override
             public void onClick (View v) {
                 startActivity(new Intent(NotesActivity.this, NotesEditor.class));
+            }
+        });
+
+        final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected (MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.media_page:
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        menuItem.setChecked(true);
+                        break;
+                    case R.id.notes_page:
+                        startActivity(new Intent(getApplicationContext(), NotesActivity.class));
+                        break;
+                    case R.id.calculator_page:
+                        break;
+                }
+                return false;
             }
         });
     }
