@@ -26,6 +26,8 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
 
     private NotesCursorAdapter mNoteCursorAdapter;
 
+    private static final int NOTES_ACTIVITY_LOADER = 105;
+
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +50,7 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
             }
         });
 
-        getSupportLoaderManager().initLoader(105, null, this);
+        getSupportLoaderManager().initLoader(NOTES_ACTIVITY_LOADER, null, this);
 
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
         fabNewNote.setOnClickListener(new View.OnClickListener() {
@@ -59,15 +61,17 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
         });
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.getMenu().getItem(1).setChecked(true);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected (MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.media_page:
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         menuItem.setChecked(true);
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         break;
                     case R.id.notes_page:
+                        menuItem.setChecked(true);
                         startActivity(new Intent(getApplicationContext(), NotesActivity.class));
                         break;
                     case R.id.calculator_page:
