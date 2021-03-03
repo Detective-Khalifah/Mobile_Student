@@ -12,12 +12,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MediaCategoryAdapter pageAdapter = new MediaCategoryAdapter(getSupportFragmentManager(), this);
-
-        ViewPager mediaPager = (ViewPager) findViewById(R.id.media_pager);
-        mediaPager.setAdapter(pageAdapter);
-
-        TabLayout mediaTabs = (TabLayout) findViewById(R.id.tab_layout);
-        mediaTabs.setupWithViewPager(mediaPager);
+//        MediaCategoryAdapter pageAdapter = new MediaCategoryAdapter(getSupportFragmentManager(), this);
+//
+//        ViewPager mediaPager = (ViewPager) findViewById(R.id.media_pager);
+//        mediaPager.setAdapter(pageAdapter);
+//
+//        TabLayout mediaTabs = (TabLayout) findViewById(R.id.tab_layout);
+//        mediaTabs.setupWithViewPager(mediaPager);
     }
 }

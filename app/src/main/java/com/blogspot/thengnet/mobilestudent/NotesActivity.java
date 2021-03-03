@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -66,12 +68,23 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
             @Override
             public boolean onNavigationItemSelected (MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+//                    Fragment currentFragment = null;
                     case R.id.media_page:
                         menuItem.setChecked(true);
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        Fragment currentFragment = new MediaFragment();
+                        FragmentTransaction mediaTransact = getSupportFragmentManager().beginTransaction();
+                        mediaTransact.replace(R.id.fragment_media, currentFragment);
+                        mediaTransact.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                        mediaTransact.commit();
+//                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         break;
                     case R.id.notes_page:
                         menuItem.setChecked(true);
+//                        FragmentTransaction ft = getSupportFragmentManager()
+//                                .beginTransaction();
+//                        ft.replace(R.id.details, details);
+//                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                        ft.commit();
                         startActivity(new Intent(getApplicationContext(), NotesActivity.class));
                         break;
                     case R.id.calculator_page:
