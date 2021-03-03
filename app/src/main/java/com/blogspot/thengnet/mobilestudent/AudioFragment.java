@@ -9,12 +9,14 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.IOException;
@@ -23,22 +25,21 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass for audio files.
  */
-public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnErrorListener, AdapterView.OnItemClickListener {
+public class AudioFragment extends Fragment implements AdapterView.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>, MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnErrorListener {
 
+    private final String LOG_TAG = AudioFragment.class.getName();
+
+    AudioAdapter audioAdapter;
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
+
     Fragment controlsFragment;
     FragmentManager childrenManager;
     FragmentTransaction channel;
 
-    private final String LOG_TAG = AudioFragment.class.getName();
     private ArrayList<Audio> mAudioFiles;
-    private String[] mAudioTableColumns;
-    private String mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
-            MediaStore.Audio.Media.IS_PODCAST;
-    private String mAudioSortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // TODO: present option in preferences
-    private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
     public AudioFragment () {
         // Required empty public constructor
@@ -47,6 +48,11 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(LOG_TAG, "This is onCreate()");
+
+        // create and initialise the ArrayAdapter<Audio> object
+        // to parse the {@link Audio} list item views
+        audioAdapter = new AudioAdapter(getContext(), null);
     }
 
     @Override
@@ -54,46 +60,18 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
                               Bundle savedInstanceState) {
         View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
 
-        mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA
-        };
+        Log.v(LOG_TAG, "This is onCreateView");
+        // Inflate the layout for this fragment
+        return audioRoot;
+    }
 
-        audioCursor = getContext().getContentResolver().query(mAudioUri,
-                mAudioTableColumns, mAudioSelection, null, mAudioSortOrder);
-
-        if (audioCursor != null && audioCursor.getCount() > 0) {
-
-            // create the {@link ArrayList<Audio>} object
-            mAudioFiles = new ArrayList<>();
-
-            //
-            for (; audioCursor.moveToNext(); ) {
-
-                // get reference to column indices of interesting columns from the table
-                int nTitle = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-                int nPath = audioCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                int nLength = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-
-                // instantiate {@link Audio} objects and add them to the {@link ArrayList<Audio>}
-                mAudioFiles.add(
-                        new Audio(
-                                audioCursor.getString(nTitle),
-                                audioCursor.getString(nPath),
-                                audioCursor.getString(nLength)
-                        )
-                );
-            }
-
-            // release the device resources after the {@link audioCursor} object has been utilised
-            audioCursor.close();
-        }
-
-        // create and initialise the ArrayAdapter<Audio> object
-        // to parse the {@link Audio} list item views
-        ArrayAdapter<Audio> audioAdapter = new AudioAdapter(getContext(), mAudioFiles);
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.v(LOG_TAG, "This is onViewCreated()");
 
         // Set the {@link audioAdapter} ArrayAdapter on the ListView
-        ListView lvAudio = (ListView) audioRoot.findViewById(R.id.lv_audio);
+        ListView lvAudio = (ListView) view.findViewById(R.id.lv_audio);
         lvAudio.setAdapter(audioAdapter);
 
         lvAudio.setOnItemClickListener(this);
@@ -105,8 +83,73 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
         mAudioPlayer.setOnCompletionListener(this);
         mAudioPlayer.setOnErrorListener(this);
 
-        // Inflate the layout for this fragment
-        return audioRoot;
+        getLoaderManager().initLoader(5, null, this);
+    }
+
+    public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
+        Log.v(LOG_TAG, "This is onCreateLoader");
+
+        Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+        String[] mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA
+        };
+        String mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
+                MediaStore.Audio.Media.IS_PODCAST;
+        // TODO: present option in preferences
+        String mAudioSortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+
+        return new CursorLoader(getActivity().getApplicationContext(), mAudioUri,
+                mAudioTableColumns, mAudioSelection, null, mAudioSortOrder);
+    }
+
+    @Override
+    public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
+        Log.v(LOG_TAG, "This is onLoadFinished");
+        if (cursor != null) {
+            audioCursor = cursor;
+            audioAdapter.swapCursor(audioCursor);
+            return;
+        }
+        /**
+         if (audioCursor != null && audioCursor.getCount() > 0) {
+         Log.v(LOG_TAG, "audioCursor not empty!");
+
+         // create the {@link ArrayList<Audio>} object
+         mAudioFiles = new ArrayList<>();
+
+         //
+         for (; audioCursor.moveToNext(); ) {
+
+         // get reference to column indices of interesting columns from the table
+         int nTitle = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+         int nPath = audioCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+         int nLength = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+
+         // instantiate {@link Audio} objects and add them to the {@link ArrayList<Audio>}
+         mAudioFiles.add(
+         new Audio(
+         audioCursor.getString(nTitle),
+         audioCursor.getString(nPath),
+         audioCursor.getString(nLength)
+         )
+         );
+         }
+         audioAdapter.swapCursor(cursor);
+         return;
+
+         //             release the device resources after the {@link audioCursor} object has been utilised
+         //            audioCursor.close();
+         } */
+
+        Log.v(LOG_TAG, "audioCursor empty!");
+
+    }
+
+    @Override
+    public void onLoaderReset (Loader<Cursor> loader) {
+        Log.v(LOG_TAG, "This is onLoaderReset()");
+        audioAdapter.swapCursor(null);
     }
 
     /**
@@ -177,4 +220,5 @@ public class AudioFragment extends Fragment implements MediaPlayer.OnCompletionL
         playAudioFile(getContext(), Uri.parse(currentAudio.getAudioPath()));
         showControlsFragment();
     }
+
 }
