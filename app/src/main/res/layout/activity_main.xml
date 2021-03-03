@@ -7,9 +7,20 @@
     tools:context=".MainActivity">
 
     <FrameLayout
-        android:id="@+id/fragment_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/notes_snackbar_frame"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <fragment
+            android:id="@+id/fragment_frame"
+            class="com.blogspot.thengnet.mobilestudent.NotesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|top" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/notes_snackbar_frame"
@@ -26,5 +37,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:background="@android:color/holo_blue_light"
         app:menu="@menu/bottom_navigation_menu" />
 </android.support.constraint.ConstraintLayout>

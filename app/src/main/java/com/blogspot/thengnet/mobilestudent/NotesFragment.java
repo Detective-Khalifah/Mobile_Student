@@ -1,5 +1,7 @@
 package com.blogspot.thengnet.mobilestudent;
 
+import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.content.ContentUris;
@@ -75,35 +77,41 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragment
-        View notesView = inflater.inflate(R.layout.fragment_notes, container, false);
+        try {
+            // Inflate the layout for this fragment
+            View notesView = inflater.inflate(R.layout.fragment_notes, container, false);
 
-        pbLoadingNotes = (ProgressBar) notesView.findViewById(R.id.pb_loading_notes);
+            pbLoadingNotes = (ProgressBar) notesView.findViewById(R.id.pb_loading_notes);
 
-        fabNewNote = (FloatingActionButton) notesView.findViewById(R.id.fab_new_note);
-        fabNewNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-//                startActivity(new Intent(MainActivity.this, NotesEditor.class));
-            }
-        });
+            fabNewNote = (FloatingActionButton) notesView.findViewById(R.id.fab_new_note);
+            fabNewNote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick (View v) {
+                    //                startActivity(new Intent(MainActivity.this, NotesEditor.class));
+                }
+            });
 
-        ListView notesList = (ListView) notesView.findViewById(R.id.notes_list);
+            ListView notesList = (ListView) notesView.findViewById(R.id.notes_list);
 
-        mNoteCursorAdapter = new NotesCursorAdapter(getContext(), null);
-        notesList.setAdapter(mNoteCursorAdapter);
+            mNoteCursorAdapter = new NotesCursorAdapter(getContext(), null);
+            notesList.setAdapter(mNoteCursorAdapter);
 
-        notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                showProgress();
-//                startActivity(new Intent(NotesFragment.this, NotesViewer.class)
-//                        .setData(ContentUris.withAppendedId(
-//                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
-            }
-        });
+            notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                    showProgress();
+                    //                startActivity(new Intent(NotesFragment.this, NotesViewer.class)
+                    //                        .setData(ContentUris.withAppendedId(
+                    //                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
+                }
+            });
 
-        return notesView;
+            return notesView;
+        } catch (InflateException e) {
+            e.printStackTrace();
+            Log.v(NotesFragment.class.getName(), "NotesFragment couldn't be inflated: " + e.getMessage());
+        }
+        return null;
     }
 
     public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
@@ -116,7 +124,7 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
         String whereClause = null;
         String[] whereArgs = null;
 
-        showProgress();
+//        showProgress();
         return new CursorLoader(getContext(), NoteContract.NoteEntry.CONTENT_URI,
                 projection, whereClause, whereArgs, null);
     }
