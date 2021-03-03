@@ -97,8 +97,8 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
 
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
-            startActivity(new Intent(NotesActivity.this, MainActivity.class));
+//        if (item.getItemId() == android.R.id.home)
+//            startActivity(new Intent(NotesActivity.this, MainActivity.class));
         return super.onOptionsItemSelected(item);
     }
 
