@@ -12,8 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".NotesActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +23,7 @@
         <activity
             android:name=".NotesViewer"
             android:label="@string/note_viewer_label"
-            android:parentActivityName=".NotesActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT"
                 android:value=".NotesActivity" />
@@ -32,7 +31,7 @@
 
         <activity
             android:name=".NotesEditor"
-            android:parentActivityName=".NotesActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT"
                 android:value=".NotesActivity" />

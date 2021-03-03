@@ -1,6 +1,5 @@
 package com.blogspot.thengnet.mobilestudent;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -8,12 +7,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class NotesActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes);
+        setContentView(R.layout.activity_main);
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
@@ -39,7 +38,7 @@ public class NotesActivity extends AppCompatActivity {
                         ft.replace(R.id.fragment_frame, currentFragment);
                         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                         ft.commit();
-//                        startActivity(new Intent(getApplicationContext(), NotesActivity.class));
+//                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         break;
                     case R.id.calculator_page:
                         currentFragment = null;

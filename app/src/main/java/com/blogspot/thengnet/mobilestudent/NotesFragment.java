@@ -84,7 +84,7 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
         fabNewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-//                startActivity(new Intent(NotesActivity.this, NotesEditor.class));
+//                startActivity(new Intent(MainActivity.this, NotesEditor.class));
             }
         });
 
