@@ -80,9 +80,9 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
                 showProgress();
-                //                startActivity(new Intent(NotesFragment.this, NotesViewer.class)
-                //                        .setData(ContentUris.withAppendedId(
-                //                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
+                startActivity(new Intent(getContext(), NotesViewer.class)
+                        .setData(ContentUris.withAppendedId(
+                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
             }
         });
 
