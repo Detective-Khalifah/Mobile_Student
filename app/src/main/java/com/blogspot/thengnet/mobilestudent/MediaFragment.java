@@ -13,6 +13,8 @@ import android.view.ViewGroup;
  */
 public class MediaFragment extends Fragment {
 
+    MediaCategoryAdapter pageAdapter;
+
     public MediaFragment () {
         // Required empty public constructor
     }
@@ -20,6 +22,7 @@ public class MediaFragment extends Fragment {
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pageAdapter = new MediaCategoryAdapter(getFragmentManager(), getContext());
     }
 
     @Override
@@ -27,15 +30,18 @@ public class MediaFragment extends Fragment {
                               Bundle savedInstanceState) {
         View mediaView = inflater.inflate(R.layout.fragment_media, container, false);
 
-        MediaCategoryAdapter pageAdapter = new MediaCategoryAdapter(getFragmentManager()/**getSupportFragmentManager()*/, getContext());
-
-        ViewPager mediaPager = (ViewPager) mediaView.findViewById(R.id.media_pager);
-        mediaPager.setAdapter(pageAdapter);
-
-        TabLayout mediaTabs = (TabLayout) mediaView.findViewById(R.id.tab_layout);
-        mediaTabs.setupWithViewPager(mediaPager);
-
         // Inflate the layout for this fragment
         return mediaView;
+    }
+
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ViewPager mediaPager = (ViewPager) view.findViewById(R.id.media_pager);
+        mediaPager.setAdapter(pageAdapter);
+
+        TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
+        mediaTabs.setupWithViewPager(mediaPager);
     }
 }
