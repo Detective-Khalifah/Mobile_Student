@@ -52,6 +52,13 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // to parse the {@link Audio} list item views
         audioAdapter = new AudioAdapter(getContext(), null);
 
+        // instantiate the {@link mAudioPlayer} object
+        mAudioPlayer = new MediaPlayer();
+
+        // register callback methods for the {@link mAudioPlayer} object
+        mAudioPlayer.setOnCompletionListener(this);
+        mAudioPlayer.setOnErrorListener(this);
+
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
     }
 
@@ -73,13 +80,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         lvAudio.setAdapter(audioAdapter);
 
         lvAudio.setOnItemClickListener(this);
-
-        // instantiate the {@link mAudioPlayer} object
-        mAudioPlayer = new MediaPlayer();
-
-        // register callback methods for the {@link mAudioPlayer} object
-        mAudioPlayer.setOnCompletionListener(this);
-        mAudioPlayer.setOnErrorListener(this);
 
         getLoaderManager().restartLoader(AUDIO_LOADER_ID, null, this);
     }
