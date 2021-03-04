@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
+
+        // Replace #FrameLayout content with {@link NotesFragment} at startup
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame, new NotesFragment()).commit();
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected (MenuItem menuItem) {
@@ -29,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
                         mediaTransact.replace(R.id.fragment_frame, currentFragment);
                         mediaTransact.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                         mediaTransact.commit();
-//                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         break;
                     case R.id.notes_page:
                         menuItem.setChecked(true);
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
                         ft.replace(R.id.fragment_frame, currentFragment);
                         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                         ft.commit();
-//                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         break;
                     case R.id.calculator_page:
                         currentFragment = null;
