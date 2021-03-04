@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".VideoActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".NotesViewer"
             android:label="@string/note_viewer_label"
@@ -28,7 +27,6 @@
                 android:name="android.support.PARENT"
                 android:value=".NotesActivity" />
         </activity>
-
         <activity
             android:name=".NotesEditor"
             android:parentActivityName=".MainActivity">
@@ -41,7 +39,6 @@
             android:name=".data.NoteProvider"
             android:authorities="com.blogspot.thengnet.mobilestudent"
             android:exported="false" />
-
     </application>
 
 </manifest>
