@@ -29,6 +29,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         LoaderManager.LoaderCallbacks<Cursor>, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener {
 
+    private static final int AUDIO_LOADER_ID = 3;
+
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
     private final String LOG_TAG = AudioFragment.class.getName();
@@ -49,6 +51,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // create and initialise the ArrayAdapter<Audio> object
         // to parse the {@link Audio} list item views
         audioAdapter = new AudioAdapter(getContext(), null);
+
+        getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
     }
 
     @Override
@@ -77,7 +81,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         mAudioPlayer.setOnCompletionListener(this);
         mAudioPlayer.setOnErrorListener(this);
 
-        getLoaderManager().restartLoader(5, null, this);
+        getLoaderManager().restartLoader(AUDIO_LOADER_ID, null, this);
     }
 
     public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
