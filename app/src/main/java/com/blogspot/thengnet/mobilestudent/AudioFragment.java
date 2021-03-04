@@ -21,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass for audio files.
@@ -38,7 +37,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     FragmentManager childrenManager;
     FragmentTransaction channel;
     private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    private ArrayList<Audio> mAudioFiles;
 
     public AudioFragment () {
         // Required empty public constructor
@@ -47,10 +45,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, "This is onCreate()");
-
-        // create the {@link ArrayList<Audio>} object
-        mAudioFiles = new ArrayList<>();
 
         // create and initialise the ArrayAdapter<Audio> object
         // to parse the {@link Audio} list item views
@@ -62,7 +56,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                               Bundle savedInstanceState) {
         View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
 
-        Log.v(LOG_TAG, "This is onCreateView");
         // Inflate the layout for this fragment
         return audioRoot;
     }
@@ -70,7 +63,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onViewCreated (View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.v(LOG_TAG, "This is onViewCreated()");
 
         // Set the {@link audioAdapter} ArrayAdapter on the ListView
         ListView lvAudio = (ListView) view.findViewById(R.id.lv_audio);
@@ -85,11 +77,10 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         mAudioPlayer.setOnCompletionListener(this);
         mAudioPlayer.setOnErrorListener(this);
 
-        getLoaderManager().initLoader(5, null, this);
+        getLoaderManager().restartLoader(5, null, this);
     }
 
     public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
-        Log.v(LOG_TAG, "This is onCreateLoader");
 
         String[] mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
@@ -106,41 +97,11 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
     @Override
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
-        Log.v(LOG_TAG, "This is onLoadFinished");
-        if (cursor != null) {
+        if (cursor != null && cursor.getCount() > 0) {
             Log.v(LOG_TAG, "audioCursor not empty!");
             audioCursor = cursor;
             audioAdapter.swapCursor(audioCursor);
-//            return;
-        }
-        if (audioCursor != null && audioCursor.getCount() > 0) {
-            Log.v(LOG_TAG, "audioCursor not empty!");
-
-            audioCursor.moveToFirst();
-            //
-            for (int i = 0; i < audioCursor.getCount(); i++) {
-
-                // get reference to column indices of interesting columns from the table
-                int nTitle = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-                int nPath = audioCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                int nLength = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-
-                // instantiate {@link Audio} objects and add them to the {@link ArrayList<Audio>}
-                mAudioFiles.add(
-                        new Audio(
-                                audioCursor.getString(nTitle),
-                                audioCursor.getString(nPath),
-                                audioCursor.getString(nLength)
-                        )
-                );
-                audioCursor.moveToNext();
-//                Log.v(LOG_TAG, "mAudioFiles appended: " + mAudioFiles.get(i));
-            }
-            audioAdapter.swapCursor(cursor);
             return;
-
-            //             release the device resources after the {@link audioCursor} object has been utilised
-            //            audioCursor.close();
         }
 
         Log.v(LOG_TAG, "audioCursor empty!");
@@ -149,7 +110,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
     @Override
     public void onLoaderReset (Loader<Cursor> loader) {
-        Log.v(LOG_TAG, "This is onLoaderReset()");
         audioAdapter.swapCursor(null);
     }
 
@@ -223,10 +183,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         playAudioFile(getContext(), Uri.parse(
                 String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
         ));
-
-//        Audio currentAudio = mAudioFiles.get(position);
-//        Log.v(LOG_TAG, "ArrayList method: " + currentAudio);
-//        playAudioFile(getContext(), Uri.parse(currentAudio.getAudioPath()));
         showControlsFragment();
     }
 
