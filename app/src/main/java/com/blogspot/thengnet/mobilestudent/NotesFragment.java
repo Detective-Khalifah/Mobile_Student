@@ -1,20 +1,17 @@
 package com.blogspot.thengnet.mobilestudent;
 
-import android.util.Log;
-import android.view.InflateException;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
-import android.view.MenuItem;
+import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -45,17 +42,10 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View notesView = inflater.inflate(R.layout.fragment_notes, container, false);
 
-        try {
-            // Inflate the layout for this fragment
-            View notesView = inflater.inflate(R.layout.fragment_notes, container, false);
-
-            return notesView;
-        } catch (InflateException e) {
-            e.printStackTrace();
-            Log.v(NotesFragment.class.getName(), "NotesFragment couldn't be inflated: " + e.getMessage());
-        }
-        return null;
+        return notesView;
     }
 
     @Override
@@ -68,7 +58,7 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
         fabNewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                //                startActivity(new Intent(MainActivity.this, NotesEditor.class));
+                startActivity(new Intent(getActivity().getApplicationContext(), NotesEditor.class));
             }
         });
 
