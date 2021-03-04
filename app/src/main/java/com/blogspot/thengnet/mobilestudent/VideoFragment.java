@@ -89,6 +89,9 @@ public class VideoFragment extends Fragment implements LoaderManager.LoaderCallb
         lvAudio.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                Intent vid = new Intent(getContext(), VideoActivity.class);
+                vid.setData(ContentUris.withAppendedId(mVideoUri, id));
+                startActivity(vid);
             }
         });
     }
