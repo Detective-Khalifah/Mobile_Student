@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
                         ft.commit();
                         break;
                     case R.id.calculator_page:
+                        menuItem.setChecked(true);
                         currentFragment = new SimpleCalculatorFragment();
                         FragmentTransaction calculatorFragTransaction = getSupportFragmentManager().beginTransaction();
                         calculatorFragTransaction.replace(R.id.fragment_frame, currentFragment);
