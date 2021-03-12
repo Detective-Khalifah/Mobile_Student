@@ -17,7 +17,7 @@ import javax.script.ScriptException;
 public class SimpleCalculatorFragment extends Fragment {
 
     private static final String LOG_TAG = SimpleCalculatorFragment.class.getName();
-    private static StringBuilder equation = new StringBuilder();
+    private static StringBuilder expression = new StringBuilder(), result;
     private TextView tvExpression, tvResult;
 
     public SimpleCalculatorFragment () {
@@ -45,11 +45,11 @@ public class SimpleCalculatorFragment extends Fragment {
         tvResult = (TextView) view.findViewById(R.id.tv_result);
 
         if (savedInstanceState != null) {
-            savedInstanceState.getString("expression_string");
+            expression = new StringBuilder(savedInstanceState.getString("expression_string"));
             savedInstanceState.getString("result_string");
         }
 
-
+        displayResult();
     }
 
     /**
@@ -131,72 +131,72 @@ public class SimpleCalculatorFragment extends Fragment {
      */
     private void appendChar (String btn) {
         char firstChar = 'a', lastChar = 'z';
-        int length = 0;
-        if (equation.length() > 1) {
-            length = equation.length() - 1;
-            firstChar = equation.charAt(0);
-            lastChar = equation.charAt(length);
+        int lastPosition = 0;
+        if (expression.length() > 1) {
+            lastPosition = expression.length() - 1;
+            firstChar = expression.charAt(0);
+            lastChar = expression.charAt(lastPosition);
         }
-        String eq = String.valueOf(equation);
+        String eq = String.valueOf(expression);
         switch (btn) {
             case "deciPoint":
                 // check if a decimal point is contained in the equation
                 // If there's one, replace it at the end; otherwise, append '.' to end of equation
                 if (eq.contains("."))
-                    equation.deleteCharAt(equation.indexOf("."));
-                equation.append('.');
-                tvExpression.setText(equation);
+                    expression.deleteCharAt(expression.indexOf("."));
+                expression.append('.');
+                tvExpression.setText(expression);
                 break;
             case "divi":
                 if (eq.endsWith("/"))
                     break;
                 else if (lastChar == '+' || lastChar == '-' || lastChar == '*')
-                    equation.replace(length, equation.length(), "/");
+                    expression.replace(lastPosition, expression.length(), "/");
                 else
-                    equation.append("/");
-                tvExpression.setText(equation);
+                    expression.append("/");
+                tvExpression.setText(expression);
                 break;
             case "minus":
                 if (eq.endsWith("-"))
                     break;
                 else if (lastChar == '+' || lastChar == '*' || lastChar == '/')
-                    equation.replace(length, equation.length(), "-");
+                    expression.replace(lastPosition, expression.length(), "-");
                 else
-                    equation.append('-');
-                tvExpression.setText(equation);
+                    expression.append('-');
+                tvExpression.setText(expression);
                 break;
             case "multi":
                 if (eq.endsWith("*"))
                     break;
                 else if (lastChar == '+' || lastChar == '-' || lastChar == '/')
-                    equation.replace(length, equation.length(), "*");
+                    expression.replace(lastPosition, expression.length(), "*");
                 else
-                    equation.append("*");
-                tvExpression.setText(equation);
+                    expression.append("*");
+                tvExpression.setText(expression);
                 break;
             case "plus":
                 if (eq.endsWith("+")) {
                     break;
                 } else if (lastChar == '-' || lastChar == '*' || lastChar == '/')
-                    equation.replace(length, equation.length(), "+");
+                    expression.replace(lastPosition, expression.length(), "+");
                 else {
-                    equation.append("+");
+                    expression.append("+");
                 }
-                tvExpression.setText(equation);
+                tvExpression.setText(expression);
                 break;
             case "plusMinus":
                 if (firstChar == '-') {
-                    eq = String.valueOf(equation.deleteCharAt(0));
-                    equation = new StringBuilder(eq);
+                    eq = String.valueOf(expression.deleteCharAt(0));
+                    expression = new StringBuilder(eq);
                 } else {
-                    equation = new StringBuilder("-").append(eq);
+                    expression = new StringBuilder("-").append(eq);
                 }
-                displayResult(eq);
+                displayResult();
                 break;
             case "equals?":
                 if (eq.endsWith("*") || eq.endsWith("+") || eq.endsWith("-") || eq.endsWith("/"))
-                    eq = String.valueOf(equation.deleteCharAt(length));
-                displayResult(eq);
+                    eq = String.valueOf(expression.deleteCharAt(lastPosition));
+                displayResult();
                 break;
             case "(":
             case ")":
@@ -204,25 +204,23 @@ public class SimpleCalculatorFragment extends Fragment {
             case "del":
                 break;
             default:
-                equation.append(btn);
-                tvResult.setText(equation);
+                expression.append(btn);
+                tvResult.setText(expression);
         }
     }
 
     /**
      * This method evaluates the expression on #tvExpression and displays it on #tvResult
-     *
-     * @param theEquation String formatted equation
      */
-    private void displayResult (String theEquation) {
+    private void displayResult () {
         String evalResult; // evaluated result
 
         // Mozilla Rhino
         try {
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
-            evalResult = String.valueOf(engine.eval(theEquation));
+            evalResult = String.valueOf(engine.eval(String.valueOf(expression)));
 
-            tvExpression.setText(equation);
+            tvExpression.setText(expression);
             tvResult.setText(evalResult);
         } catch (ScriptException se) {
             tvExpression.setText(se.getLocalizedMessage());
