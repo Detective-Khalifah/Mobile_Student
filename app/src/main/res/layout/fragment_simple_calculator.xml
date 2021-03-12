@@ -55,7 +55,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_one" />
 
             <Button
@@ -64,7 +63,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_two" />
 
             <Button
@@ -73,7 +71,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_three" />
 
             <Button
@@ -97,7 +94,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_four" />
 
             <Button
@@ -106,7 +102,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_five" />
 
             <Button
@@ -115,7 +110,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_six" />
 
             <Button
@@ -138,7 +132,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_seven" />
 
             <Button
@@ -147,7 +140,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_eight" />
 
             <Button
@@ -156,7 +148,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_nine" />
 
             <Button
@@ -179,7 +170,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/number_zero" />
 
             <Button
@@ -188,7 +178,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/decimal" />
 
             <Button
@@ -197,7 +186,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/plus_minus_sign" />
 
             <Button
@@ -206,7 +194,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:onClick="touched"
                 android:text="@string/equality_sign" />
         </LinearLayout>
 
@@ -221,7 +208,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/plus_sign" />
 
             <Button
@@ -230,7 +216,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/minus_sign" />
 
             <Button
@@ -239,7 +224,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/multiplication_sign" />
 
             <Button
@@ -248,7 +232,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="touched"
                 android:text="@string/division_sign" />
         </LinearLayout>
 
