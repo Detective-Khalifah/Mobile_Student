@@ -5,11 +5,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SimpleCalculatorFragment extends Fragment {
+
+    private static final String LOG_TAG = SimpleCalculatorFragment.class.getName();
+    private static StringBuilder equation = new StringBuilder();
+    private TextView tvExpression, tvResult;
 
     public SimpleCalculatorFragment () {
         // Required empty public constructor
@@ -27,4 +36,198 @@ public class SimpleCalculatorFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_simple_calculator, container, false);
     }
+
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        tvExpression = (TextView) view.findViewById(R.id.tv_expression);
+        tvResult = (TextView) view.findViewById(R.id.tv_result);
+
+        if (savedInstanceState != null) {
+            savedInstanceState.getString("expression_string");
+            savedInstanceState.getString("result_string");
+        }
+
+
+    }
+
+    /**
+     * Ascertain the {@link @param view} item clicked, and trigger the appropriate response.
+     *
+     * @param view item clicked
+     */
+    public void touched (View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.bt_decimal:
+                appendChar("deciPoint");
+                break;
+            case R.id.bt_minus:
+                appendChar("minus");
+                break;
+            case R.id.bt_plus:
+                appendChar("plus");
+                break;
+            case R.id.bt_multiplication:
+                appendChar("multi");
+                break;
+            case R.id.bt_division:
+                appendChar("divi");
+                break;
+            case R.id.bt_plus_minus:
+                appendChar("plusMinus");
+                break;
+            case R.id.bt_equal:
+                appendChar("equals?");
+                break;
+            case R.id.bt_zero:
+                appendChar("0");
+                break;
+            case R.id.bt_one:
+                appendChar("1");
+                break;
+            case R.id.bt_two:
+                appendChar("2");
+                break;
+            case R.id.bt_three:
+                appendChar("3");
+                break;
+            case R.id.bt_four:
+                appendChar("4");
+                break;
+            case R.id.bt_five:
+                appendChar("5");
+                break;
+            case R.id.bt_six:
+                appendChar("6");
+                break;
+            case R.id.bt_seven:
+                appendChar("7");
+                break;
+            case R.id.bt_eight:
+                appendChar("8");
+                break;
+            case R.id.bt_nine:
+                appendChar("9");
+                break;
+            case R.id.bt_del:
+                appendChar("del");
+            case R.id.bt_lePar:
+                appendChar("(");
+                break;
+            case R.id.bt_rePar:
+                appendChar(")");
+                break;
+        }
+    }
+
+    /**
+     * Checks the expression to determine what arithmetic symbols are at the beginning or end;
+     * check it there's a decimal point anywhere in the expression or otherwise;
+     * and decide behavior of the recent button tapped/clicked.
+     *
+     * @param btn identifier for numeric/symbol button clicked.
+     */
+    private void appendChar (String btn) {
+        char firstChar = 'a', lastChar = 'z';
+        int length = 0;
+        if (equation.length() > 1) {
+            length = equation.length() - 1;
+            firstChar = equation.charAt(0);
+            lastChar = equation.charAt(length);
+        }
+        String eq = String.valueOf(equation);
+        switch (btn) {
+            case "deciPoint":
+                // check if a decimal point is contained in the equation
+                // If there's one, replace it at the end; otherwise, append '.' to end of equation
+                if (eq.contains("."))
+                    equation.deleteCharAt(equation.indexOf("."));
+                equation.append('.');
+                tvExpression.setText(equation);
+                break;
+            case "divi":
+                if (eq.endsWith("/"))
+                    break;
+                else if (lastChar == '+' || lastChar == '-' || lastChar == '*')
+                    equation.replace(length, equation.length(), "/");
+                else
+                    equation.append("/");
+                tvExpression.setText(equation);
+                break;
+            case "minus":
+                if (eq.endsWith("-"))
+                    break;
+                else if (lastChar == '+' || lastChar == '*' || lastChar == '/')
+                    equation.replace(length, equation.length(), "-");
+                else
+                    equation.append('-');
+                tvExpression.setText(equation);
+                break;
+            case "multi":
+                if (eq.endsWith("*"))
+                    break;
+                else if (lastChar == '+' || lastChar == '-' || lastChar == '/')
+                    equation.replace(length, equation.length(), "*");
+                else
+                    equation.append("*");
+                tvExpression.setText(equation);
+                break;
+            case "plus":
+                if (eq.endsWith("+")) {
+                    break;
+                } else if (lastChar == '-' || lastChar == '*' || lastChar == '/')
+                    equation.replace(length, equation.length(), "+");
+                else {
+                    equation.append("+");
+                }
+                tvExpression.setText(equation);
+                break;
+            case "plusMinus":
+                if (firstChar == '-') {
+                    eq = String.valueOf(equation.deleteCharAt(0));
+                    equation = new StringBuilder(eq);
+                } else {
+                    equation = new StringBuilder("-").append(eq);
+                }
+                displayResult(eq);
+                break;
+            case "equals?":
+                if (eq.endsWith("*") || eq.endsWith("+") || eq.endsWith("-") || eq.endsWith("/"))
+                    eq = String.valueOf(equation.deleteCharAt(length));
+                displayResult(eq);
+                break;
+            case "(":
+            case ")":
+                break;
+            case "del":
+                break;
+            default:
+                equation.append(btn);
+                tvResult.setText(equation);
+        }
+    }
+
+    /**
+     * This method evaluates the expression on #tvExpression and displays it on #tvResult
+     *
+     * @param theEquation String formatted equation
+     */
+    private void displayResult (String theEquation) {
+        String evalResult; // evaluated result
+
+        // Mozilla Rhino
+        try {
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
+            evalResult = String.valueOf(engine.eval(theEquation));
+
+            tvExpression.setText(equation);
+            tvResult.setText(evalResult);
+        } catch (ScriptException se) {
+            tvExpression.setText(se.getLocalizedMessage());
+        }
+
+    }
+
 }
