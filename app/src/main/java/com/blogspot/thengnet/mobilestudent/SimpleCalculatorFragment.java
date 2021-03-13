@@ -129,6 +129,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 break;
             case R.id.bt_del:
                 appendChar("del");
+                break;
             case R.id.bt_lePar:
                 appendChar("(");
                 break;
