@@ -72,17 +72,15 @@ public class SimpleCalculatorFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                Log.v(LOG_TAG, "expression state::" + expression);
-                if (!String.valueOf(expression).equals(""))
+                if (!String.valueOf(expression).equals("") || expression.length() > 1)
                     expression.deleteCharAt(expression.length() - 1); // delete last character
                 displayResult(); // show expression & result after deleting last character
-                Log.v(LOG_TAG, "expression state::" + expression);
             }
         });
         btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick (View v) {
-                if (!String.valueOf(expression).equals(""))
+                if (!String.valueOf(expression).equals("") || expression.length() > 1)
                     expression = null;
                 displayResult();
                 return false;
@@ -256,7 +254,8 @@ public class SimpleCalculatorFragment extends Fragment {
     private void displayResult () {
         String evalResult; // evaluated result
 
-        if (String.valueOf(expression).equals("")) {
+        if (String.valueOf(expression).equals("") || expression.length() < 1) {
+            tvExpression.setText("");
             tvResult.setText("");
             return;
         }
