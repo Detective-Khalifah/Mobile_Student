@@ -22,6 +22,10 @@
     <string name="note_summary">This is my first time coding a notes app. It\'ll be a pretty simple one, too.</string>
     <string name="note_title">First Note.</string>
 
+    <!-- Note Editor input labels -->
+    <string name="note_content_editor_label">Content</string>
+    <string name="note_title_editor_label">Title</string>
+
     <!-- Calculator signs, symbols & special keys -->
     <string name="left_parenthesis">(</string>
     <string name="right_parenthesis">)</string>

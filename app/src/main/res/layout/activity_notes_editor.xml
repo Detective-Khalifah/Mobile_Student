@@ -18,7 +18,7 @@
             android:id="@+id/edit_note_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title" />
+            android:hint="@string/note_editor_unsuccessful_save" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -33,7 +33,7 @@
             android:id="@+id/edit_note_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Body"
+            android:hint="@string/note_content_editor_label"
             android:inputType="textMultiLine|text|textImeMultiLine" />
     </android.support.design.widget.TextInputLayout>
 
