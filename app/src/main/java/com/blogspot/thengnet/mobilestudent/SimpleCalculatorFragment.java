@@ -230,17 +230,48 @@ public class SimpleCalculatorFragment extends Fragment {
                 tvExpression.setText(expression);
                 break;
             case "plusMinus":
-                if (firstChar == '-') {
-                    eq = String.valueOf(expression.deleteCharAt(0));
-                    expression = new StringBuilder(eq);
+                // If expression is empty, simply skip using plus-minus sign the process of finding
+                // last sign, and return to last point/stack
+                if (eq.length() == 0)
+                    return;
+
+                // If a "-" sign already exists at the beginning, skip the process of finding last
+                // sign, and return to last point/stack
+                if (eq.charAt(0) == '-')
+                    return;
+                int lastSignIndex = checkSign();
+
+                Log.v(LOG_TAG, "lastSignIndex: " + lastSignIndex);
+
+                // Add a "-" sign to the part of expression after a sign (+, -, / or *) if one exists
+                if (lastSignIndex != -1) {
+                    String rem = expression.substring(lastSignIndex + 1, expression.length());
+
+                    // When there are no numbers after the last sign, return to stack
+                    if (!rem.equals(""))
+                        return;
+
+                    // When there already exists a plus-minus expression segment
+                    // TODO: Use a regex here; would be easier to find functions already having
+                    //  "(-function)" at different segments to avoid repeating at same
+                    //  segment, and toggle deletion of "(-) without function part, if one already
+                    //  exits. Also find out the plus-minus code; that'd make things easier without
+                    //  confusing minus sign
+                    if (eq.contains("(-")) {
+                        Log.v(LOG_TAG, "expression in eq.contains(\"(-\")) check:: " + expression);
+                        return;
+                    }
+                    expression = new StringBuilder(eq.substring(0, lastSignIndex) + eq.charAt(lastSignIndex) + "(-" + rem + ")");
                 } else {
+                    // add a "-" sign at the beginning and append the expression if no sign is found
                     expression = new StringBuilder("-").append(eq);
                 }
+
                 displayResult();
                 break;
             case "equals?":
                 if (eq.endsWith("*") || eq.endsWith("+") || eq.endsWith("-") || eq.endsWith("/"))
-                    eq = String.valueOf(expression.deleteCharAt(lastPosition));
+                    expression.deleteCharAt(lastPosition);
                 displayResult();
                 break;
             case "(":
@@ -252,6 +283,34 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.append(btn);
                 displayResult();
         }
+    }
+
+    /**
+     * Traverse the expression from right, and return the index (if found) of the first
+     * arithmetic sign encountered
+     *
+     * @return the sign's index (if one exists)
+     */
+    private int checkSign () {
+        int lastSignIndex = -1;
+
+        for (int z = expression.length() - 1; z > 1; z--) {
+            switch (expression.charAt(z)) {
+                case '-':
+                case '+':
+                case '/':
+                case '*':
+                    lastSignIndex = z;
+                    break;
+                default:
+            }
+
+            if (lastSignIndex != -1)
+                break;
+        }
+
+        return lastSignIndex;
+
     }
 
     /**
