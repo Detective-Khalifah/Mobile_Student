@@ -19,7 +19,7 @@ import javax.script.ScriptException;
 public class SimpleCalculatorFragment extends Fragment {
 
     private static final String LOG_TAG = SimpleCalculatorFragment.class.getName();
-    private static StringBuilder expression = new StringBuilder(), result;
+    private static StringBuilder expression = new StringBuilder();
     private static int[] buttonsArr = {
             R.id.bt_one, R.id.bt_two, R.id.bt_three, R.id.bt_four, R.id.bt_five, R.id.bt_six,
             R.id.bt_seven, R.id.bt_eight, R.id.bt_nine, R.id.bt_lePar, R.id.bt_rePar,
@@ -72,15 +72,16 @@ public class SimpleCalculatorFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                if (!String.valueOf(expression).equals("") || expression.length() > 1)
-                    expression.deleteCharAt(expression.length() - 1); // delete last character
+                if (String.valueOf(expression).equals("") || expression == null)
+                    return;
+                expression.deleteCharAt(expression.length() - 1); // delete last character
                 displayResult(); // show expression & result after deleting last character
             }
         });
         btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick (View v) {
-                if (!String.valueOf(expression).equals("") || expression.length() > 1)
+                if (!String.valueOf(expression).equals("") || expression != null)
                     expression = null;
                 displayResult();
                 return false;
@@ -172,10 +173,14 @@ public class SimpleCalculatorFragment extends Fragment {
     private void appendChar (String btn) {
         char firstChar = 'a', lastChar = 'z';
         int lastPosition = 0;
-        if (expression.length() > 1) {
-            lastPosition = expression.length() - 1;
-            firstChar = expression.charAt(0);
-            lastChar = expression.charAt(lastPosition);
+        if (expression != null) {
+            if (expression.length() > 1) {
+                lastPosition = expression.length() - 1;
+                firstChar = expression.charAt(0);
+                lastChar = expression.charAt(lastPosition);
+            }
+        } else {
+            expression = new StringBuilder();
         }
         String eq = String.valueOf(expression);
         switch (btn) {
@@ -243,7 +248,8 @@ public class SimpleCalculatorFragment extends Fragment {
             case ")":
                 break;
             default:
-                expression.append(btn);
+                if (expression != null)
+                    expression.append(btn);
                 displayResult();
         }
     }
@@ -254,7 +260,7 @@ public class SimpleCalculatorFragment extends Fragment {
     private void displayResult () {
         String evalResult; // evaluated result
 
-        if (String.valueOf(expression).equals("") || expression.length() < 1) {
+        if (String.valueOf(expression).equals("") || expression == null || expression.equals(null) || expression.equals("")) {
             tvExpression.setText("");
             tvResult.setText("");
             return;
