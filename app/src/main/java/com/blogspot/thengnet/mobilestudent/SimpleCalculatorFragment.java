@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import javax.script.ScriptEngine;
@@ -19,6 +20,12 @@ public class SimpleCalculatorFragment extends Fragment {
     private static final String LOG_TAG = SimpleCalculatorFragment.class.getName();
     private static StringBuilder expression = new StringBuilder(), result;
     private TextView tvExpression, tvResult;
+    private static int[] buttonsArr = {
+            R.id.bt_one, R.id.bt_two, R.id.bt_three, R.id.bt_four, R.id.bt_five, R.id.bt_six,
+            R.id.bt_seven, R.id.bt_eight, R.id.bt_nine, R.id.bt_lePar, R.id.bt_rePar, R.id.bt_del,
+            R.id.bt_minus, R.id.bt_plus, R.id.bt_plus_minus, R.id.bt_division, R.id.bt_multiplication,
+            R.id.bt_equal, R.id.bt_decimal
+    };
 
     public SimpleCalculatorFragment () {
         // Required empty public constructor
@@ -27,7 +34,6 @@ public class SimpleCalculatorFragment extends Fragment {
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -43,6 +49,16 @@ public class SimpleCalculatorFragment extends Fragment {
 
         tvExpression = (TextView) view.findViewById(R.id.tv_expression);
         tvResult = (TextView) view.findViewById(R.id.tv_result);
+
+        for (int buttonId : buttonsArr) {
+            Button button = (Button) view.findViewById(buttonId);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick (View v) {
+                    touched(v);
+                }
+            });
+        }
 
         if (savedInstanceState != null) {
             expression = new StringBuilder(savedInstanceState.getString("expression_string"));
@@ -141,11 +157,11 @@ public class SimpleCalculatorFragment extends Fragment {
         switch (btn) {
             case "deciPoint":
                 // check if a decimal point is contained in the equation
-                // If there's one, replace it at the end; otherwise, append '.' to end of equation
+                // If there's one, replace it at the end; otherwise, append '.' to end of expression
                 if (eq.contains("."))
                     expression.deleteCharAt(expression.indexOf("."));
                 expression.append('.');
-                tvExpression.setText(expression);
+                displayResult();
                 break;
             case "divi":
                 if (eq.endsWith("/"))
@@ -154,7 +170,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "/");
                 else
                     expression.append("/");
-                tvExpression.setText(expression);
+                displayResult();
                 break;
             case "minus":
                 if (eq.endsWith("-"))
@@ -163,7 +179,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "-");
                 else
                     expression.append('-');
-                tvExpression.setText(expression);
+                displayResult();
                 break;
             case "multi":
                 if (eq.endsWith("*"))
@@ -172,7 +188,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "*");
                 else
                     expression.append("*");
-                tvExpression.setText(expression);
+                displayResult();
                 break;
             case "plus":
                 if (eq.endsWith("+")) {
@@ -182,7 +198,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 else {
                     expression.append("+");
                 }
-                tvExpression.setText(expression);
+                displayResult();
                 break;
             case "plusMinus":
                 if (firstChar == '-') {
@@ -205,7 +221,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 break;
             default:
                 expression.append(btn);
-                tvResult.setText(expression);
+                displayResult();
         }
     }
 
