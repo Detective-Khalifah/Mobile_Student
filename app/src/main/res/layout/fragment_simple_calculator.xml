@@ -25,7 +25,6 @@
             android:hyphenationFrequency="none"
             android:maxLines="2"
             android:textColor="@android:color/darker_gray"
-            android:textDirection="rtl"
             android:textSize="56sp"
             tools:text="24 + 0.4" />
 
