@@ -21,6 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foregroundGravity="fill"
+            android:ellipsize="start"
+            android:maxLines="2"
+            android:textDirection="rtl"
             android:textColor="@android:color/darker_gray"
             android:textSize="56sp"
             tools:text="24 + 0.4" />
