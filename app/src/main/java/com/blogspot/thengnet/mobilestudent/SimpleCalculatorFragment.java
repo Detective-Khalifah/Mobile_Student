@@ -70,6 +70,11 @@ public class SimpleCalculatorFragment extends Fragment {
 
         btnDelete = (Button) view.findViewById(R.id.bt_del);
         btnDelete.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Delete character at last position of expression, if expression not empty
+             *
+             * @param v
+             */
             @Override
             public void onClick (View v) {
                 if (String.valueOf(expression).equals("") || expression == null)
@@ -79,6 +84,12 @@ public class SimpleCalculatorFragment extends Fragment {
             }
         });
         btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
+            /**
+             * Delete all characters in the expression
+             *
+             * @param v -- the #btnDelete button
+             * @return
+             */
             @Override
             public boolean onLongClick (View v) {
                 if (!String.valueOf(expression).equals("") || expression != null)
@@ -319,7 +330,11 @@ public class SimpleCalculatorFragment extends Fragment {
     private void displayResult () {
         String evalResult; // evaluated result
 
-        if (String.valueOf(expression).equals("") || expression == null || expression.equals(null) || expression.equals("")) {
+        /**
+         * Do not evaluate expression if it's empty!
+         * Simply set the expression & result #TextViews to the null String ""
+         */
+        if (String.valueOf(expression).equals("") || expression == null) {
             tvExpression.setText("");
             tvResult.setText("");
             return;
