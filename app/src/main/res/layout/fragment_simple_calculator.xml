@@ -19,12 +19,12 @@
         <TextView
             android:id="@+id/tv_expression"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foregroundGravity="fill"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:ellipsize="start"
             android:maxLines="2"
-            android:textDirection="rtl"
             android:textColor="@android:color/darker_gray"
+            android:textDirection="rtl"
             android:textSize="56sp"
             tools:text="24 + 0.4" />
 
