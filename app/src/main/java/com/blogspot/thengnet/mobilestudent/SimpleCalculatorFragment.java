@@ -62,6 +62,22 @@ public class SimpleCalculatorFragment extends Fragment {
         }
 
         btnDelete = (Button) view.findViewById(R.id.bt_del);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                if (expression != null)
+                    expression.deleteCharAt(expression.length() - 1); // delete last character
+                displayResult(); // show expression & result after deleting last character
+            }
+        });
+        btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick (View v) {
+                expression = null;
+                displayResult();
+                return false;
+            }
+        });
 
         if (savedInstanceState != null) {
             expression = new StringBuilder(savedInstanceState.getString("expression_string"));
@@ -230,6 +246,11 @@ public class SimpleCalculatorFragment extends Fragment {
      */
     private void displayResult () {
         String evalResult; // evaluated result
+
+        if (expression == null) {
+            tvResult.setText("");
+            return;
+        }
 
         // Mozilla Rhino
         try {
