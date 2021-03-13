@@ -2,6 +2,7 @@ package com.blogspot.thengnet.mobilestudent;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,15 +72,18 @@ public class SimpleCalculatorFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                if (expression != null)
+                Log.v(LOG_TAG, "expression state::" + expression);
+                if (!String.valueOf(expression).equals(""))
                     expression.deleteCharAt(expression.length() - 1); // delete last character
                 displayResult(); // show expression & result after deleting last character
+                Log.v(LOG_TAG, "expression state::" + expression);
             }
         });
         btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick (View v) {
-                expression = null;
+                if (!String.valueOf(expression).equals(""))
+                    expression = null;
                 displayResult();
                 return false;
             }
@@ -252,7 +256,7 @@ public class SimpleCalculatorFragment extends Fragment {
     private void displayResult () {
         String evalResult; // evaluated result
 
-        if (expression == null) {
+        if (String.valueOf(expression).equals("")) {
             tvResult.setText("");
             return;
         }
