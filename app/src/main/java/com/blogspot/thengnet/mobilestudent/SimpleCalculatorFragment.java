@@ -38,6 +38,12 @@ public class SimpleCalculatorFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("expression_string", String.valueOf(expression));
+    }
+
+    @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -81,7 +87,6 @@ public class SimpleCalculatorFragment extends Fragment {
 
         if (savedInstanceState != null) {
             expression = new StringBuilder(savedInstanceState.getString("expression_string"));
-            savedInstanceState.getString("result_string");
         }
 
         displayResult();
