@@ -171,7 +171,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "/");
                 else
                     expression.append("/");
-                displayResult();
+                tvExpression.setText(expression);
                 break;
             case "minus":
                 if (eq.endsWith("-"))
@@ -180,7 +180,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "-");
                 else
                     expression.append('-');
-                displayResult();
+                tvExpression.setText(expression);
                 break;
             case "multi":
                 if (eq.endsWith("*"))
@@ -189,7 +189,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "*");
                 else
                     expression.append("*");
-                displayResult();
+                tvExpression.setText(expression);
                 break;
             case "plus":
                 if (eq.endsWith("+")) {
@@ -199,7 +199,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 else {
                     expression.append("+");
                 }
-                displayResult();
+                tvExpression.setText(expression);
                 break;
             case "plusMinus":
                 if (firstChar == '-') {
