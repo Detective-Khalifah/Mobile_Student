@@ -285,9 +285,12 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.deleteCharAt(lastPosition);
                 displayResult();
                 break;
+            // TODO: Add logic and layout tricks to handle "dangling parentheses"
             case "(":
+                expression.append("(");
                 break;
             case ")":
+                expression.append(")");
                 break;
             default:
                 if (expression != null)
@@ -323,6 +326,9 @@ public class SimpleCalculatorFragment extends Fragment {
         return lastSignIndex;
 
     }
+
+    // TODO: Re-factor this method into 2 later -- one to display expression at touch of any button,
+    //  another to evaluate and display result only when "=" sign is clicked [PRODUCTION (RC-01)-LEVEL]
 
     /**
      * This method evaluates the expression on #tvExpression and displays it on #tvResult
