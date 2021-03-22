@@ -59,7 +59,16 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         mAudioPlayer.setOnCompletionListener(this);
         mAudioPlayer.setOnErrorListener(this);
 
+        // instantiate #this Fragment
+        controlsFragment = new MediaControlsFragment();
+
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onStop () {
+        super.onStop();
+        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
     @Override
@@ -121,12 +130,14 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      * Show the {@link MediaControlsFragment} child fragment when an audio file is played
      */
     private void showControlsFragment () {
-        controlsFragment = new MediaControlsFragment();
         childrenManager = getChildFragmentManager();
         channel = childrenManager.beginTransaction();
-        channel.add(R.id.controls_container, controlsFragment)
-                .addToBackStack("control_frag")
-                .commit();
+        if (controlsFragment.isAdded()) {
+            channel.show(controlsFragment);
+        } else {
+            channel.add(R.id.controls_container, controlsFragment)
+                    .commit();
+        }
     }
     // TODO: find a way - if any, besides LiveData + ViewModel - to handle click events on the
     // child fragment's views.
@@ -165,7 +176,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     @Override
     public void onCompletion (MediaPlayer mp) {
-        childrenManager.popBackStack();
+        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
     @Override
