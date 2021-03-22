@@ -352,12 +352,14 @@ public class SimpleCalculatorFragment extends Fragment {
             evalResult = String.valueOf(engine.eval(String.valueOf(expression)));
 
             // Remove ".0" if that's the last string at end of evaluated expression
+            // TODO: Check type of number and use it to determine result display format
             if (evalResult.substring(evalResult.length() - 2, evalResult.length()).equals(".0"))
                 evalResult = evalResult.substring(0, evalResult.length() - 2);
 
             tvExpression.setText(expression);
             tvResult.setText(evalResult);
         } catch (ScriptException se) {
+            // TODO: Remove in [PRODUCTION (RC-01)-LEVEL], replace with user-friendly message
             tvExpression.setText(se.getLocalizedMessage());
         }
 
