@@ -55,7 +55,8 @@ public class VideoActivity extends AppCompatActivity {
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion (MediaPlayer mp) {
-                Toast.makeText(VideoActivity.this, "Playback completed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VideoActivity.this, "Playback completed!",
+                        Toast.LENGTH_SHORT).show();
                 mVideoView.seekTo(1);
             }
         });

@@ -9,7 +9,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Fragment mediaFrag, notesFrag, calcFrag;
+    private Fragment currentFragment, // the current activity selected
+            mediaFrag, notesFrag, calcFrag;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayCalculatorFrag () {
-        Fragment currentFragment;
         currentFragment = new SimpleCalculatorFragment();
         FragmentTransaction calculatorFragTransaction = getSupportFragmentManager().beginTransaction();
         calculatorFragTransaction.replace(R.id.fragment_frame, currentFragment);
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayNotesFrag () {
-        Fragment currentFragment;
         currentFragment = new NotesFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, currentFragment);
@@ -69,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayMediaFrag () {
-        Fragment currentFragment;
         currentFragment = new MediaFragment();
         FragmentTransaction mediaTransact = getSupportFragmentManager()
                 .beginTransaction();
