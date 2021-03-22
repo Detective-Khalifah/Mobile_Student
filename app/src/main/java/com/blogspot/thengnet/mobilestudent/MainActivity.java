@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
 
         // Replace #FrameLayout content with {@link NotesFragment} at startup
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame, new NotesFragment()).commit();
+        currentFragment = notesFrag;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame, currentFragment).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -35,14 +36,17 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.media_page:
                         menuItem.setChecked(true);
+                        currentFragment = mediaFrag;
                         displayMediaFrag();
                         break;
                     case R.id.notes_page:
                         menuItem.setChecked(true);
+                        currentFragment = notesFrag;
                         displayNotesFrag();
                         break;
                     case R.id.calculator_page:
                         menuItem.setChecked(true);
+                        currentFragment = calcFrag;
                         displayCalculatorFrag();
                         break;
                 }
@@ -52,27 +56,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayCalculatorFrag () {
-        currentFragment = new SimpleCalculatorFragment();
         FragmentTransaction calculatorFragTransaction = getSupportFragmentManager().beginTransaction();
-        calculatorFragTransaction.replace(R.id.fragment_frame, currentFragment);
-        calculatorFragTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        if (currentFragment.isAdded()) {
+            calculatorFragTransaction.show(currentFragment);
+            calculatorFragTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        } else {
+            calculatorFragTransaction.add(R.id.fragment_frame, currentFragment);
+        }
+
         calculatorFragTransaction.commit();
     }
 
     private void displayNotesFrag () {
-        currentFragment = new NotesFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_frame, currentFragment);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        if (currentFragment.isAdded()) {
+            ft.show(currentFragment);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        } else {
+            ft.add(R.id.fragment_frame, currentFragment);
+        }
+
         ft.commit();
     }
 
     private void displayMediaFrag () {
-        currentFragment = new MediaFragment();
-        FragmentTransaction mediaTransact = getSupportFragmentManager()
-                .beginTransaction();
-        mediaTransact.replace(R.id.fragment_frame, currentFragment);
-        mediaTransact.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        FragmentTransaction mediaTransact = getSupportFragmentManager().beginTransaction();
+        if (currentFragment.isAdded()) {
+            mediaTransact.show(currentFragment);
+        } else {
+            mediaTransact.add(R.id.fragment_frame, currentFragment);
+            mediaTransact.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        }
         mediaTransact.commit();
     }
 
