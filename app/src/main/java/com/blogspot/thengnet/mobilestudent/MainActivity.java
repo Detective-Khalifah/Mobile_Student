@@ -9,11 +9,17 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Fragment mediaFrag, notesFrag, calcFrag;
+
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // instantiate the 3 main component fragments of the app
+        calcFrag = new SimpleCalculatorFragment();
+        mediaFrag = new MediaFragment();
+        notesFrag = new NotesFragment();
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.getMenu().getItem(1).setChecked(true);
