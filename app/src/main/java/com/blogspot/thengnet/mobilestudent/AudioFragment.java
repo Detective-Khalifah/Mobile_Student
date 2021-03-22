@@ -66,12 +66,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     @Override
-    public void onStop () {
-        super.onStop();
-        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
-    }
-
-    @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
         View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
