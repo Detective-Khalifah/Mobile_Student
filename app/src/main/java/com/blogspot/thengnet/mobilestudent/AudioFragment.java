@@ -58,6 +58,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     @Override
+    public void onAttach (Context context) {
+        super.onAttach(context);
+
+        if (context instanceof AudioItemClickListener) {
+            audioListener = (AudioItemClickListener) context;
+        }
+    }
+
+    @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -191,7 +200,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         playAudioFile(getContext(), Uri.parse(
                 String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
         ));
-        audioListener.onAudioClick(position, id);
+        Log.v(LOG_TAG, "Title:: " + audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+        audioListener.onAudioClick(position, id/*, audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))*/);
     }
 
     @Override
