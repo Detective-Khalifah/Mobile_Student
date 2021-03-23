@@ -40,8 +40,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     FragmentTransaction channel;
     private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
-    private AudioItemClickListener audioListener;
-
     /**
      * A callback method that takes the @param parent {@link AdapterView} object,
      * the list item @param view,
@@ -57,12 +55,11 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                 String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
         ));
 
-        // set position, id and title of #audioListener to audio item at current position
-        audioListener.onAudioClick(position, id,
-                audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-
         // show the {@link MediaControlsFragment} Fragment
         showControlsFragment();
+
+        // set title of #audioListener to audio item at current position
+        audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
     }
 
     /**
@@ -83,10 +80,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onAttach (Context context) {
         super.onAttach(context);
-
-        if (context instanceof AudioItemClickListener) {
-            audioListener = (AudioItemClickListener) context;
-        }
     }
 
     @Override
@@ -207,13 +200,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             return true;
         }
         return false;
-    }
-
-    /**
-     * An interface to handle audio item clicks and communicate with {@link MediaControlsFragment}
-     */
-    protected interface AudioItemClickListener {
-        void onAudioClick (int audioPosition, long audioId, String audioTitle);
     }
 
     @Override
