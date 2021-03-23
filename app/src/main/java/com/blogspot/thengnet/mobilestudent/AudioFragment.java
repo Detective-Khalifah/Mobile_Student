@@ -40,6 +40,19 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     FragmentTransaction channel;
     private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
+    private AudioItemClickListener audioListener;
+
+    /**
+     * A callback method to handle {@link Audio} file completions.
+     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
+     */
+    @Override
+    public void onCompletion (MediaPlayer mp) {
+        // TODO: check if Fragment is visible to user first, then make this call to hide the controls
+        //  fragment or postpone it till onResumed()
+        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
+    }
+
     public AudioFragment () {
         // Required empty public constructor
     }
@@ -165,20 +178,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     /**
-     * A callback method to handle {@link Audio} file completions.
-     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
-     */
-    @Override
-    public void onCompletion (MediaPlayer mp) {
-        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
-    }
-
-    @Override
-    public boolean onError (MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    /**
      * A callback method that takes the @param parent {@link AdapterView} object,
      * the list item @param view,
      *
@@ -192,7 +191,16 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         playAudioFile(getContext(), Uri.parse(
                 String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
         ));
-        showControlsFragment();
+        audioListener.onAudioClick(position, id);
+    }
+
+    @Override
+    public boolean onError (MediaPlayer mp, int what, int extra) {
+        return false;
+    }
+
+    protected interface AudioItemClickListener {
+        void onAudioClick (int audioItemPosition, long id);
     }
 
 }
