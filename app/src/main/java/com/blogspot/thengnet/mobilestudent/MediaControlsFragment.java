@@ -28,4 +28,8 @@ public class MediaControlsFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_media_controls, container, false);
     }
+
+    protected void setAudioMetrics (String title, long trackPosition) {
+
+    }
 }
