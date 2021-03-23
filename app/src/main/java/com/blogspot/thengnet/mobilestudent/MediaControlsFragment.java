@@ -70,8 +70,18 @@ public class MediaControlsFragment extends Fragment {
         tvTrackTitle.setText(trackTitle);
     }
 
-    public void setAudioMetrics (String title, long trackPosition) {
-        Log.v(MediaControlsFragment.class.getName(), "titleReceived::" + title);
-        tvTrackTitle.setText(title + " playing");
+    protected void setAudioMetrics (String title, long position) {
+        // TODO: reset old/new title on TextView and position SeekBar accordingly
+    }
+
+    // TODO: Use clickListener & LongClickListener for the "next track" and fast-forward features
+    //  respectively
+    private void fastForward (View fastForwardButton) {
+    }
+
+    private void pausePlayBack (View pausePlayButton) {
+    }
+
+    private void rewind (View rewindButton) {
     }
 }

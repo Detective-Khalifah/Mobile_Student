@@ -7,6 +7,14 @@
     android:background="#F44336"
     tools:context=".MediaControlsFragment">
 
+    <SeekBar
+        android:id="@+id/sb_track_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/track_buttons"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
     <TextView
         android:id="@+id/tv_track_title"
         android:layout_width="match_parent"
@@ -19,6 +27,7 @@
         tools:text="@string/track_title" />
 
     <LinearLayout
+        android:id="@+id/track_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -29,6 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="rewind"
             android:src="@drawable/baseline_skip_previous_black_48"
             app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -37,6 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="pausePlayBack"
             android:src="@drawable/baseline_pause_black_48"
             app:layout_constraintLeft_toRightOf="@id/btn_prev_track" />
 
@@ -45,6 +56,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="fastForward"
             android:src="@drawable/baseline_skip_next_black_48"
             app:layout_constraintLeft_toRightOf="@id/btn_play_pause" />
 
