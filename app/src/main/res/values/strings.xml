@@ -1,18 +1,53 @@
 <resources>
+    <!-- Activity & Fragment labels -->
     <string name="app_name">Mobile Student</string>
     <string name="audio_tab_label">Audio</string>
     <string name="video_tab_label">Video</string>
-    <string name="last_updated">Last updated:</string>
-    <string name="note_summary">This is my first time coding a notes app. It\'ll be a pretty simple one, too.</string>
-    <string name="note_title">First Note.</string>
     <string name="notes_activity_label">My Notes</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="track_title">Beethoven\'s 5th Symphony</string>
-    <string name="menu_save">Save</string>
-    <string name="note_editor_successful_save">Note saved!</string>
-    <string name="note_editor_unsuccessful_save">Note could note be saved...</string>
     <string name="media_pages_label">Media</string>
     <string name="calculator_activity_label">Calculator</string>
     <string name="note_viewer_label">Note Viewer</string>
+
+    <!-- Menu item labels -->
+    <string name="menu_save">Save</string>
+
+    <string name="track_title">Beethoven\'s 5th Symphony</string>
+
+    <!-- Note Editor status messages -->
+    <string name="note_editor_successful_save">Note saved!</string>
+    <string name="note_editor_unsuccessful_save">Note could note be saved…</string>
+
+    <!-- Notes sub-app string values -->
+    <string name="last_updated">Last updated:</string>
+    <string name="note_summary">This is my first time coding a notes app. It\'ll be a pretty simple one, too.</string>
+    <string name="note_title">First Note.</string>
+
+    <!-- Note Editor input labels -->
+    <string name="note_content_editor_label">Content</string>
+    <string name="note_title_editor_label">Title</string>
+
+    <!-- Calculator signs, symbols & special keys -->
+    <string name="left_parenthesis">(</string>
+    <string name="right_parenthesis">)</string>
+    <string name="decimal">.</string>
+    <string name="minus_sign">-</string>
+    <string name="plus_sign">+</string>
+    <string name="plus_minus_sign">±</string>
+    <string name="division_sign">÷</string>
+    <string name="multiplication_sign">×</string>
+    <string name="equality_sign">=</string>
+    <string name="del">Del</string>
+
+    <!-- Calculator numerical keys -->
+    <string name="number_zero">0</string>
+    <string name="number_one">1</string>
+    <string name="number_two">2</string>
+    <string name="number_three">3</string>
+    <string name="number_four">4</string>
+    <string name="number_five">5</string>
+    <string name="number_six">6</string>
+    <string name="number_seven">7</string>
+    <string name="number_eight">8</string>
+    <string name="number_nine">9</string>
+
 </resources>

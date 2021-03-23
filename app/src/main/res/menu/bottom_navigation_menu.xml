@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/media_page"
+        android:checked="false"
         android:enabled="true"
         android:title="@string/media_pages_label"
         android:icon="@drawable/baseline_perm_media_black_36"/>
 
     <item
         android:id="@+id/notes_page"
+        android:checked="true"
         android:enabled="true"
         android:title="@string/notes_activity_label"
         android:icon="@drawable/baseline_note_white_36"/>

@@ -42,12 +42,19 @@ public class NoteProvider extends ContentProvider {
             case NOTES:
                 table = theDb.query(NoteContract.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                // Register notifier on cursor object
+                table.setNotificationUri(getContext().getContentResolver(), uri);
+
                 return table;
             case NOTES_ID:
                 selection = NoteContract.NoteEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 table = theDb.query(NoteContract.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+
+                // Register notifier on cursor object
+                table.setNotificationUri(getContext().getContentResolver(), uri);
+
                 return table;
             default:
                 throw new IllegalArgumentException("Content URI is unknown!" + uri);
@@ -81,21 +88,27 @@ public class NoteProvider extends ContentProvider {
 
     @Override
     public int delete (Uri uri, String selection, String[] selectionArgs) {
+        int rowsDeleted;
         final int deleteType = sUriMatcher.match(uri);
         switch (deleteType) {
             case NOTES:
-                getContext().getContentResolver().notifyChange(uri, null);
-                return mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
+                break;
             case NOTES_ID:
                 selection = NoteContract.NoteEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // Notify the cursor loader when the cursor data has changed due to a delete query
-                getContext().getContentResolver().notifyChange(uri, null);
-                return mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = mNoteDbHelper.getWritableDatabase().delete(NoteContract.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("DELETE Content uri unknown!");
         }
+        if (rowsDeleted > 0) {
+            // Notify the cursor loader when the cursor data has changed due to a delete query
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override
@@ -103,18 +116,14 @@ public class NoteProvider extends ContentProvider {
         final int UriType = sUriMatcher.match(uri);
         switch (UriType) {
             case NOTES:
-                updateNote(uri, values, selection, selectionArgs);
-                break;
+                return updateNote(uri, values, selection, selectionArgs);
             case NOTES_ID:
                 selection = NoteContract.NoteEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                updateNote(uri, values, selection, selectionArgs);
-                break;
+                return updateNote(uri, values, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("UPDATE Content URI unknown!");
         }
-
-        return 0;
     }
 
     private Uri addNote (Uri uri, ContentValues values) {
@@ -144,10 +153,12 @@ public class NoteProvider extends ContentProvider {
                 throw new IllegalArgumentException("Note's \"Last Updated Time\" passed, but as a null value!");
         }
 
-        // Notify the cursor loader when the cursor data has changed when a note is updated
-        getContext().getContentResolver().notifyChange(uri, null);
         int rowsUpdated = mNoteDbHelper.getWritableDatabase().update(NoteContract.TABLE_NAME,
                 updateValues, whereClause, whereArg);
+        if (rowsUpdated > 0) {
+            // Notify the cursor loader when the cursor data has changed when a note is updated
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return rowsUpdated;
     }
 }

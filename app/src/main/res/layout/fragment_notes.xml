@@ -4,14 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NotesActivity">
+    android:layout_marginBottom="@dimen/bottom_nav_view_margin"
+    tools:context=".MainActivity">
 
     <ListView
         android:id="@+id/notes_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
+        android:id="@+id/pb_loading_notes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,24 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
-        app:layout_constraintRight_toRightOf="parent"
-        android:src="@drawable/baseline_add_circle_white_36"/>
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_add_circle_white_36"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
-
-    <FrameLayout
-        android:id="@+id/notes_snackbar_frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

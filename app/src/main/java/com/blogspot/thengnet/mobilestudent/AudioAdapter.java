@@ -1,37 +1,35 @@
 package com.blogspot.thengnet.mobilestudent;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.database.Cursor;
+import android.provider.MediaStore;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+public class AudioAdapter extends CursorAdapter {
 
-public class AudioAdapter extends ArrayAdapter<Audio> {
-
-    public AudioAdapter (Context context, ArrayList<Audio> resource) {
-        super(context, 0, resource);
+    public AudioAdapter (Context context, Cursor c) {
+        super(context, c, 0);
     }
 
-    public View getView (int position, View convertView, ViewGroup parent) {
+    @Override
+    public View newView (Context context, Cursor cursor, ViewGroup viewGroup) {
+        return LayoutInflater.from(context).inflate(R.layout.media_list_item,
+                viewGroup, false);
+    }
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.media_list_item,
-                    parent, false);
-        }
+    @Override
+    public void bindView (View view, Context context, Cursor cursor) {
+        int titleIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        int lengthIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
-        Audio currentAudio = getItem(position);
+        TextView tvTitle = (TextView) view.findViewById(R.id.tv_media_title);
+        tvTitle.setText(cursor.getString(titleIndex));
 
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tv_media_title);
-        tvTitle.setText(currentAudio.getAudioTitle());
-
-        TextView tvLength = (TextView) convertView.findViewById(R.id.tv_media_length);
-        tvLength.setText(currentAudio.getAudioLength());
-
-        return convertView;
+        TextView tvLength = (TextView) view.findViewById(R.id.tv_media_length);
+        tvLength.setText(cursor.getString(lengthIndex));
     }
 }
