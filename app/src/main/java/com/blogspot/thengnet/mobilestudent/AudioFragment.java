@@ -43,6 +43,26 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     private AudioItemClickListener audioListener;
 
     /**
+     * A callback method that takes the @param parent {@link AdapterView} object,
+     * the list item @param view,
+     *
+     * @param position of the list item view in the list view,
+     *                 the int @param id of the view
+     *                 that has been clicked on.
+     */
+    @Override
+    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+        Log.v(LOG_TAG, "ContentUris method: " + ContentUris.withAppendedId(mAudioUri, id));
+        playAudioFile(getContext(), Uri.parse(
+                String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
+        ));
+
+        // set position, id and title of #audioListener to audio item at current position
+        audioListener.onAudioClick(position, id,
+                audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+    }
+
+    /**
      * A callback method to handle {@link Audio} file completions.
      * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
      */
@@ -187,30 +207,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     /**
-     * A callback method that takes the @param parent {@link AdapterView} object,
-     * the list item @param view,
-     *
-     * @param position of the list item view in the list view,
-     *                 the int @param id of the view
-     *                 that has been clicked on.
+     * An interface to handle audio item clicks and communicate with {@link MediaControlsFragment}
      */
-    @Override
-    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-        Log.v(LOG_TAG, "ContentUris method: " + ContentUris.withAppendedId(mAudioUri, id));
-        playAudioFile(getContext(), Uri.parse(
-                String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
-        ));
-        Log.v(LOG_TAG, "Title:: " + audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-        audioListener.onAudioClick(position, id/*, audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))*/);
+    protected interface AudioItemClickListener {
+        void onAudioClick (int audioPosition, long audioId, String audioTitle);
     }
 
     @Override
     public boolean onError (MediaPlayer mp, int what, int extra) {
         return false;
-    }
-
-    protected interface AudioItemClickListener {
-        void onAudioClick (int audioItemPosition, long id);
     }
 
 }
