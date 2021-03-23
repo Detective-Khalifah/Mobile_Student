@@ -60,6 +60,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // set position, id and title of #audioListener to audio item at current position
         audioListener.onAudioClick(position, id,
                 audioCursor.getString(audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+
+        // show the {@link MediaControlsFragment} Fragment
+        showControlsFragment();
     }
 
     /**
