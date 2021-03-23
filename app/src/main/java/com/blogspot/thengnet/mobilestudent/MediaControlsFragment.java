@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
  */
 public class MediaControlsFragment extends Fragment {
 
+    private TextView tvTrackTitle;
 
     public MediaControlsFragment () {
         // Required empty public constructor
@@ -29,7 +31,14 @@ public class MediaControlsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_media_controls, container, false);
     }
 
-    protected void setAudioMetrics (String title, long trackPosition) {
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        tvTrackTitle = view.findViewById(R.id.tv_track_title);
+    }
+
+    protected void setAudioMetrics (String title, long trackPosition) {
+        tvTrackTitle.setText(title);
     }
 }
