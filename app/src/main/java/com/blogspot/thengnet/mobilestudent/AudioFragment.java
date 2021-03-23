@@ -59,17 +59,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                 String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
         ));
 
+        // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
+        //  audio item to the object
+        controlsFragment = MediaControlsFragment.newInstance(audioCursor.getString(
+                audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                Long.parseLong(audioCursor.getString(
+                        audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+
         // show the {@link MediaControlsFragment} Fragment
         showControlsFragment();
-
-        // set title of #audioListener to audio item at current position
-        if (controlsFragment == null)
-            Log.v(LOG_TAG, "controlsFragment null!");
-        if (controlsFragment.isResumed())
-            controlsFragment.setAudioMetrics(audioCursor.getString(audioCursor.getColumnIndex(
-                    MediaStore.Audio.Media.TITLE)), 0);
-        else
-            Log.v(LOG_TAG, "controlsFragment not resumed");
     }
 
     /**
@@ -102,9 +100,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // register callback methods for the {@link mAudioPlayer} object
         mAudioPlayer.setOnCompletionListener(this);
         mAudioPlayer.setOnErrorListener(this);
-
-        // instantiate #this Fragment
-        controlsFragment = new MediaControlsFragment();
 
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
     }
