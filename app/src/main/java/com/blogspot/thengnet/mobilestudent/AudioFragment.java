@@ -35,10 +35,14 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     private static MediaPlayer mAudioPlayer;
     private final String LOG_TAG = AudioFragment.class.getName();
     AudioAdapter audioAdapter;
-    Fragment controlsFragment;
+    MediaControlsFragment controlsFragment;
     FragmentManager childrenManager;
     FragmentTransaction channel;
     private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+    public AudioFragment () {
+        // Required empty public constructor
+    }
 
     /**
      * A callback method that takes the @param parent {@link AdapterView} object,
@@ -59,7 +63,13 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         showControlsFragment();
 
         // set title of #audioListener to audio item at current position
-        audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        if (controlsFragment == null)
+            Log.v(LOG_TAG, "controlsFragment null!");
+        if (controlsFragment.isResumed())
+            controlsFragment.setAudioMetrics(audioCursor.getString(audioCursor.getColumnIndex(
+                    MediaStore.Audio.Media.TITLE)), 0);
+        else
+            Log.v(LOG_TAG, "controlsFragment not resumed");
     }
 
     /**
@@ -71,10 +81,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // TODO: check if Fragment is visible to user first, then make this call to hide the controls
         //  fragment or postpone it till onResumed()
         getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
-    }
-
-    public AudioFragment () {
-        // Required empty public constructor
     }
 
     @Override
@@ -164,15 +170,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     private void showControlsFragment () {
         childrenManager = getChildFragmentManager();
         channel = childrenManager.beginTransaction();
-        if (controlsFragment.isAdded()) {
+        if (controlsFragment.isAdded())
             channel.show(controlsFragment);
-        } else {
-            channel.add(R.id.controls_container, controlsFragment)
-                    .commit();
-        }
+        else
+            channel.add(R.id.controls_container, controlsFragment);
+
+        channel.commit();
     }
     // TODO: find a way - if any, besides LiveData + ViewModel - to handle click events on the
-    // child fragment's views.
+    //  child fragment's views.
 
     /**
      * Use the @param context of the current activity and @param path of the audio file
