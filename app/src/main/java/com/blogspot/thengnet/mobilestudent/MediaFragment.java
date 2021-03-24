@@ -122,6 +122,8 @@ public class MediaFragment extends Fragment {
                 }
             }
         } else {
+            // TODO: Check if user 'denied' permission more than once, and use #Intent to get user
+            //  to Settings screen to enable permission manually.
             return;
         }
     }
