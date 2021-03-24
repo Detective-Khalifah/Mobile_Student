@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -85,7 +86,7 @@ public class MediaFragment extends Fragment {
         mediaTabs.setupWithViewPager(mediaPager);
     }
 
-    private void hideRationale() {
+    private void hideRationale () {
         // make the views unavailable if app has storage access permission granted
         btnStorageAccess.setVisibility(View.GONE);
         tvStorageAccessExplanation.setVisibility(View.GONE);
@@ -99,6 +100,7 @@ public class MediaFragment extends Fragment {
                 return true;
             case PackageManager.PERMISSION_DENIED:
             default:
+                Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission not granted!", Snackbar.LENGTH_SHORT).show();
                 return false;
         }
     }
@@ -118,10 +120,12 @@ public class MediaFragment extends Fragment {
             if (grantResults.length > 0) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // TODO: Use a SnackBar to notify permission grant
+                    Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission Granted!", Snackbar.LENGTH_SHORT).show();
                     hideRationale();
                     setupMediaFragments(getView());
                 } else {
                     showRationale();
+                    Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission Denied!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         } else {
