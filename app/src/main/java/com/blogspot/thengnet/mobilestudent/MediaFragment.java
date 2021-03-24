@@ -11,11 +11,15 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MediaFragment extends Fragment {
+    private Button btnStorageAccess;
+    private TextView tvStorageAccessExplanation;
 
     MediaCategoryAdapter pageAdapter;
 
@@ -44,11 +48,21 @@ public class MediaFragment extends Fragment {
 
         boolean hasStorageAccess = checkStorageAccess(view.getContext());
 
-        ViewPager mediaPager = (ViewPager) view.findViewById(R.id.media_pager);
-        mediaPager.setAdapter(pageAdapter);
+        if (hasStorageAccess) {
+            // find the views explaining reason for, and enabling permission grant
+            btnStorageAccess = view.findViewById(R.id.btn_external_storage_access);
+            tvStorageAccessExplanation = view.findViewById(R.id.tv_external_storage_access);
 
-        TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
-        mediaTabs.setupWithViewPager(mediaPager);
+            // make the views unavailable if app has storage access permission granted
+            btnStorageAccess.setVisibility(View.GONE);
+            tvStorageAccessExplanation.setVisibility(View.GONE);
+
+            ViewPager mediaPager = (ViewPager) view.findViewById(R.id.media_pager);
+            mediaPager.setAdapter(pageAdapter);
+
+            TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
+            mediaTabs.setupWithViewPager(mediaPager);
+        }
     }
 
     private boolean checkStorageAccess (Context appContext) {
