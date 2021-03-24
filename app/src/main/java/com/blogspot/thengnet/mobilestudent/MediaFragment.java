@@ -1,8 +1,12 @@
 package com.blogspot.thengnet.mobilestudent;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,10 +42,24 @@ public class MediaFragment extends Fragment {
     public void onViewCreated (View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        boolean hasStorageAccess = checkStorageAccess(view.getContext());
+
         ViewPager mediaPager = (ViewPager) view.findViewById(R.id.media_pager);
         mediaPager.setAdapter(pageAdapter);
 
         TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
         mediaTabs.setupWithViewPager(mediaPager);
+    }
+
+    private boolean checkStorageAccess (Context appContext) {
+        int permissionStatus = ContextCompat.checkSelfPermission(appContext, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        switch (permissionStatus) {
+            case PackageManager.PERMISSION_GRANTED:
+                return true;
+            case PackageManager.PERMISSION_DENIED:
+            default:
+                return false;
+        }
     }
 }
