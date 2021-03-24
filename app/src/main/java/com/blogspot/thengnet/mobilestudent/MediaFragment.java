@@ -48,11 +48,11 @@ public class MediaFragment extends Fragment {
 
         boolean hasStorageAccess = checkStorageAccess(view.getContext());
 
-        if (hasStorageAccess) {
-            // find the views explaining reason for, and enabling permission grant
-            btnStorageAccess = view.findViewById(R.id.btn_external_storage_access);
-            tvStorageAccessExplanation = view.findViewById(R.id.tv_external_storage_access);
+        // find the views explaining reason for, and enabling permission grant
+        btnStorageAccess = view.findViewById(R.id.btn_external_storage_access);
+        tvStorageAccessExplanation = view.findViewById(R.id.tv_external_storage_access);
 
+        if (hasStorageAccess) {
             // make the views unavailable if app has storage access permission granted
             btnStorageAccess.setVisibility(View.GONE);
             tvStorageAccessExplanation.setVisibility(View.GONE);
