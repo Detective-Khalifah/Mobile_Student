@@ -60,11 +60,7 @@ public class MediaFragment extends Fragment {
             btnStorageAccess.setVisibility(View.GONE);
             tvStorageAccessExplanation.setVisibility(View.GONE);
 
-            ViewPager mediaPager = (ViewPager) view.findViewById(R.id.media_pager);
-            mediaPager.setAdapter(pageAdapter);
-
-            TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
-            mediaTabs.setupWithViewPager(mediaPager);
+            setupMediaFragments(view);
         } else {
             // make the views available if app has storage access permission denied -- not granted
             btnStorageAccess.setVisibility(View.VISIBLE);
@@ -77,6 +73,14 @@ public class MediaFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void setupMediaFragments (View rootView) {
+        ViewPager mediaPager = (ViewPager) rootView.findViewById(R.id.media_pager);
+        mediaPager.setAdapter(pageAdapter);
+
+        TabLayout mediaTabs = (TabLayout) rootView.findViewById(R.id.tab_layout);
+        mediaTabs.setupWithViewPager(mediaPager);
     }
 
     private boolean checkStorageAccess (Context appContext) {
@@ -105,7 +109,7 @@ public class MediaFragment extends Fragment {
                 if (grantResults.length > 0) {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                         // TODO: Use a SnackBar to notify permission grant
-                        return;
+                        setupMediaFragments(getView());
                 }
         }
     }
