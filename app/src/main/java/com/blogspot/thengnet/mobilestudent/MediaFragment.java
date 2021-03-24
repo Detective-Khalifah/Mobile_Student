@@ -3,6 +3,7 @@ package com.blogspot.thengnet.mobilestudent;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -103,8 +104,10 @@ public class MediaFragment extends Fragment {
     }
 
     private void requestStorageAccess (Context appContext) {
-        String[] permissionSet = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        requestPermissions(permissionSet, EXTERNAL_STORAGE_PERMISSION_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] permissionSet = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            requestPermissions(permissionSet, EXTERNAL_STORAGE_PERMISSION_CODE);
+        }
     }
 
     @Override
