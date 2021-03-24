@@ -111,17 +111,18 @@ public class MediaFragment extends Fragment {
     public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case EXTERNAL_STORAGE_PERMISSION_CODE:
-                if (grantResults.length > 0) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Use a SnackBar to notify permission grant
-                        hideRationale();
-                        setupMediaFragments(getView());
-                    } else {
-                        showRationale();
-                    }
+        if (requestCode == EXTERNAL_STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Use a SnackBar to notify permission grant
+                    hideRationale();
+                    setupMediaFragments(getView());
+                } else {
+                    showRationale();
                 }
+            }
+        } else {
+            return;
         }
     }
 }
