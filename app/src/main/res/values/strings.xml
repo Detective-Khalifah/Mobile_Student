@@ -49,5 +49,7 @@
     <string name="number_seven">7</string>
     <string name="number_eight">8</string>
     <string name="number_nine">9</string>
+    <string name="external_storage_permission_reason">This component of the app requires that you allow access to your device\'s storage to fetch media data.</string>
+    <string name="external_storage_permission_q">Allow Access</string>
 
 </resources>
