@@ -118,6 +118,8 @@ public class MediaFragment extends Fragment {
                         // TODO: Use a SnackBar to notify permission grant
                         hideRationale();
                         setupMediaFragments(getView());
+                    } else {
+                        showRationale();
                     }
                 }
         }
