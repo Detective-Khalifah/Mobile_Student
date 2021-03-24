@@ -18,10 +18,13 @@ import android.widget.TextView;
  * A simple {@link Fragment} subclass.
  */
 public class MediaFragment extends Fragment {
-    private Button btnStorageAccess;
-    private TextView tvStorageAccessExplanation;
+
+    // arbitrary code value to match permission request code
+    private final int EXTERNAL_STORAGE_PERMISSION_CODE = 12;
 
     MediaCategoryAdapter pageAdapter;
+    private Button btnStorageAccess;
+    private TextView tvStorageAccessExplanation;
 
     public MediaFragment () {
         // Required empty public constructor
@@ -74,6 +77,25 @@ public class MediaFragment extends Fragment {
             case PackageManager.PERMISSION_DENIED:
             default:
                 return false;
+        }
+    }
+
+    private void requestStorageAccess (Context appContext) {
+        String[] permissionSet = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        requestPermissions(permissionSet, EXTERNAL_STORAGE_PERMISSION_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case EXTERNAL_STORAGE_PERMISSION_CODE:
+                if (grantResults.length > 0) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                        // TODO: Use a SnackBar to notify permission grant
+                        return;
+                }
         }
     }
 }
