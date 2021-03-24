@@ -56,15 +56,10 @@ public class MediaFragment extends Fragment {
         tvStorageAccessExplanation = view.findViewById(R.id.tv_external_storage_access);
 
         if (hasStorageAccess) {
-            // make the views unavailable if app has storage access permission granted
-            btnStorageAccess.setVisibility(View.GONE);
-            tvStorageAccessExplanation.setVisibility(View.GONE);
-
+            hideRationale();
             setupMediaFragments(view);
         } else {
-            // make the views available if app has storage access permission denied -- not granted
-            btnStorageAccess.setVisibility(View.VISIBLE);
-            tvStorageAccessExplanation.setVisibility(View.VISIBLE);
+            showRationale();
 
             btnStorageAccess.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -75,12 +70,24 @@ public class MediaFragment extends Fragment {
         }
     }
 
+    private void showRationale () {
+        // make the views available if app has storage access permission denied -- not granted
+        btnStorageAccess.setVisibility(View.VISIBLE);
+        tvStorageAccessExplanation.setVisibility(View.VISIBLE);
+    }
+
     private void setupMediaFragments (View rootView) {
         ViewPager mediaPager = (ViewPager) rootView.findViewById(R.id.media_pager);
         mediaPager.setAdapter(pageAdapter);
 
         TabLayout mediaTabs = (TabLayout) rootView.findViewById(R.id.tab_layout);
         mediaTabs.setupWithViewPager(mediaPager);
+    }
+
+    private void hideRationale() {
+        // make the views unavailable if app has storage access permission granted
+        btnStorageAccess.setVisibility(View.GONE);
+        tvStorageAccessExplanation.setVisibility(View.GONE);
     }
 
     private boolean checkStorageAccess (Context appContext) {
@@ -107,9 +114,11 @@ public class MediaFragment extends Fragment {
         switch (requestCode) {
             case EXTERNAL_STORAGE_PERMISSION_CODE:
                 if (grantResults.length > 0) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         // TODO: Use a SnackBar to notify permission grant
+                        hideRationale();
                         setupMediaFragments(getView());
+                    }
                 }
         }
     }
