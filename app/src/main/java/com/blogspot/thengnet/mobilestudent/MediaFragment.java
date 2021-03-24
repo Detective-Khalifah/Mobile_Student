@@ -46,7 +46,7 @@ public class MediaFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
+    public void onViewCreated (final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         boolean hasStorageAccess = checkStorageAccess(view.getContext());
@@ -65,6 +65,17 @@ public class MediaFragment extends Fragment {
 
             TabLayout mediaTabs = (TabLayout) view.findViewById(R.id.tab_layout);
             mediaTabs.setupWithViewPager(mediaPager);
+        } else {
+            // make the views available if app has storage access permission denied -- not granted
+            btnStorageAccess.setVisibility(View.VISIBLE);
+            tvStorageAccessExplanation.setVisibility(View.VISIBLE);
+
+            btnStorageAccess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick (View v) {
+                    requestStorageAccess(view.getContext());
+                }
+            });
         }
     }
 
