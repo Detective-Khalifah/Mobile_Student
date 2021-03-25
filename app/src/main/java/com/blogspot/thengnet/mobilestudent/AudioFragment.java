@@ -62,9 +62,22 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
         // TODO: Implement #requestAudioFocus(AudioFocusRequest) for SDK >= Android OREO later
-        audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        //  <br>Note that the return value is never {@link #AUDIOFOCUS_REQUEST_DELAYED} when focus
+        //     *     is requested without building the {@link AudioFocusRequest} with
+        //     *     {@link AudioFocusRequest.Builder#setAcceptsDelayedFocusGain(boolean)} set to
+        //     *     {@code true}.
+        int focus = audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+        switch (focus) {
+            // start playback if audio focus is granted
+            case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
+                mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
+                playAudioFile(getContext(), mCurrentAudioUri);
+                break;
+            case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                break;
+        }
 
-        mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
 
         // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
         //  audio item to the object
