@@ -91,14 +91,14 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onAttach (Context context) {
         super.onAttach(context);
+
+        // context of the app
+        mAppContext = context;
     }
 
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // context of the app
-        mAppContext = this.getContext();
 
         audioPlayManager = (AudioManager) mAppContext.getSystemService(Context.AUDIO_SERVICE);
 
