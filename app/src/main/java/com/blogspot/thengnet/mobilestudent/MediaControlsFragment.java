@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -21,6 +22,7 @@ public class MediaControlsFragment extends Fragment {
     private static String trackTitle;
     private static long trackDuration;
 
+    private ImageView imgPlay, imgPrev, imgNext;
     private TextView tvTrackTitle;
 
     public MediaControlsFragment () {
@@ -68,6 +70,10 @@ public class MediaControlsFragment extends Fragment {
 
         tvTrackTitle = (TextView) view.findViewById(R.id.tv_track_title);
         tvTrackTitle.setText(trackTitle);
+
+        imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
+        imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
+        imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
     }
 
     protected void setAudioMetrics (String title, long position) {
