@@ -31,16 +31,20 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         MediaPlayer.OnErrorListener {
 
     private static final int AUDIO_LOADER_ID = 3;
-    private static Context appContext;
-    private static AudioManager audioPlayManager;
-    private final String LOG_TAG = AudioFragment.class.getName();
-    private static Cursor audioCursor;
+    private static final String LOG_TAG = AudioFragment.class.getName();
+
+    private static final Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    private static Uri mCurrentAudioUri;
+
+    private static Context mAppContext;
+    private static Cursor mAudioCursor;
     private static MediaPlayer mAudioPlayer;
-    private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     private AudioAdapter audioAdapter;
     private MediaControlsFragment controlsFragment;
     private FragmentManager childrenManager;
     private FragmentTransaction channel;
+
+    private static AudioManager audioPlayManager;
     private AudioManager.OnAudioFocusChangeListener audioFocus;
 
     public AudioFragment () {
@@ -57,17 +61,17 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     @Override
     public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-        Log.v(LOG_TAG, "ContentUris method: " + ContentUris.withAppendedId(mAudioUri, id));
-        playAudioFile(getContext(), Uri.parse(
-                String.valueOf(ContentUris.withAppendedId(mAudioUri, id))
-        ));
+        // TODO: Implement #requestAudioFocus(AudioFocusRequest) for SDK >= Android OREO later
+        audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
 
         // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
         //  audio item to the object
-        controlsFragment = MediaControlsFragment.newInstance(audioCursor.getString(
-                audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                Long.parseLong(audioCursor.getString(
-                        audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+        controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
+                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                Long.parseLong(mAudioCursor.getString(
+                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
 
         // show the {@link MediaControlsFragment} Fragment
         showControlsFragment();
@@ -94,9 +98,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         super.onCreate(savedInstanceState);
 
         // context of the app
-        appContext = this.getContext();
+        mAppContext = this.getContext();
 
-        audioPlayManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+        audioPlayManager = (AudioManager) mAppContext.getSystemService(Context.AUDIO_SERVICE);
 
         // create and initialise the ArrayAdapter<Audio> object
         // to parse the {@link Audio} list item views
@@ -140,16 +144,18 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     // Focus gain, with expectation previous holder stops playback
                     // AUDIOFOCUS_REQUEST_GRANTED OR AUDIOFOCUS_REQUEST_DELAYED
                     case AudioManager.AUDIOFOCUS_GAIN:
-                        // Start playback
-                        break;
-                    // Focus gain, with expectation of releasing focus momentarily
+                        // Focus gain, with expectation of releasing focus momentarily
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
                         // Start playback
+                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
+                        playAudioFile(getContext(), mCurrentAudioUri);
                         break;
 
                     // Focus gain, with expectation of releasing focus momentarily, allowing others to 'duck'
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
                         // lower volume while playing
+                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
+                        playAudioFile(getContext(), mCurrentAudioUri);
                         break;
 
                     // Focus loss, with expectation of re-gaining momentarily and ducking respectively
@@ -193,8 +199,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.getCount() > 0) {
             Log.v(LOG_TAG, "audioCursor not empty!");
-            audioCursor = cursor;
-            audioAdapter.swapCursor(audioCursor);
+            mAudioCursor = cursor;
+            audioAdapter.swapCursor(mAudioCursor);
             return;
         }
 
