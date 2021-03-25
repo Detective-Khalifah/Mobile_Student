@@ -109,7 +109,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     case AudioManager.AUDIOFOCUS_GAIN:
                         // Focus gain, with expectation of releasing focus momentarily
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                        // Set the volume to "normal state" and start playback
+                        // Set the volume to "normal level" and start playback
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
                         if (mAudioPlayer == null)
                             initialisePlayer();
@@ -120,7 +120,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     // Focus gain, with expectation of releasing focus momentarily, allowing others
                     // to 'duck'
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                        // Pause playback
+                        // Pause playback -- Lowering volume at this stage could be detrimental to
+                        // information inculcation; I'm working with podcasts eventually.
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
                         if (isPlaying())
                             pausePlayback();
@@ -129,13 +130,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     // Focus loss, with expectation of re-gaining momentarily and ducking respectively
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        // Lower volume while playing; check if mAudioPlayer object is instantiated
-                        // and being played, then lower volume; initialise and play at low volume.
-                        // otherwise.
-                        if (mAudioPlayer == null)
-                            initialisePlayer();
-                        mAudioPlayer.setVolume(.3f, .3f);
-                        playAudioFile();
+                        // Pause playback.
+                        if (isPlaying())
+                            pausePlayback();
                         break;
 
                     // Focus loss, without expectation of getting soon or ever
