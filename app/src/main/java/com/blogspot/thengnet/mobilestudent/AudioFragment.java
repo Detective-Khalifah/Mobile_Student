@@ -27,7 +27,7 @@ import java.io.IOException;
  * A simple {@link Fragment} subclass for audio files.
  */
 public class AudioFragment extends Fragment implements AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, MediaPlayer.OnCompletionListener {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int AUDIO_LOADER_ID = 3;
     private static final String LOG_TAG = AudioFragment.class.getName();
@@ -250,7 +250,19 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         mAudioPlayer = new MediaPlayer();
 
         // register callback methods for the {@link mAudioPlayer} object
-        mAudioPlayer.setOnCompletionListener(this);
+
+        mAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            /**
+             * A callback method to handle {@link Audio} file completions.
+             * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
+             */
+            @Override
+            public void onCompletion (MediaPlayer mp) {
+                // TODO: check if Fragment is visible to user first, then make this call to hide the
+                //  controls fragment or postpone it till onResumed()
+                getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
+            }
+        });
 
         mAudioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
@@ -311,17 +323,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mAudioPlayer.release();
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
-    }
-
-    /**
-     * A callback method to handle {@link Audio} file completions.
-     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
-     */
-    @Override
-    public void onCompletion (MediaPlayer mp) {
-        // TODO: check if Fragment is visible to user first, then make this call to hide the
-        //  controls fragment or postpone it till onResumed()
-        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
 }
