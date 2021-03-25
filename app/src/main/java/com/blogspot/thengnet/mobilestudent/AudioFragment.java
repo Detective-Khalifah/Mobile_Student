@@ -51,57 +51,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // Required empty public constructor
     }
 
-    /**
-     * A callback method that takes the @param parent {@link AdapterView} object,
-     * the list item @param view,
-     *
-     * @param position of the list item view in the list view,
-     *                 the int @param id of the view
-     *                 that has been clicked on.
-     */
-    @Override
-    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-        // TODO: Implement #requestAudioFocus(AudioFocusRequest) for SDK >= Android OREO later
-        //  <br>Note that the return value is never {@link #AUDIOFOCUS_REQUEST_DELAYED} when focus
-        //     *     is requested without building the {@link AudioFocusRequest} with
-        //     *     {@link AudioFocusRequest.Builder#setAcceptsDelayedFocusGain(boolean)} set to
-        //     *     {@code true}.
-        int focus = audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
-        switch (focus) {
-            // start playback if audio focus is granted
-            case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
-                mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
-                initialisePlayer();
-                playAudioFile();
-                break;
-            case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
-                break;
-        }
-
-
-        // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
-        //  audio item to the object
-        controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
-                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                Long.parseLong(mAudioCursor.getString(
-                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
-
-        // show the {@link MediaControlsFragment} Fragment
-        showControlsFragment();
-    }
-
-    /**
-     * A callback method to handle {@link Audio} file completions.
-     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
-     */
-    @Override
-    public void onCompletion (MediaPlayer mp) {
-        // TODO: check if Fragment is visible to user first, then make this call to hide the controls
-        //  fragment or postpone it till onResumed()
-        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
-    }
-
     @Override
     public void onAttach (Context context) {
         super.onAttach(context);
@@ -187,6 +136,46 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         };
 
         getLoaderManager().restartLoader(AUDIO_LOADER_ID, null, this);
+    }
+
+    /**
+     * A callback method that takes the @param parent {@link AdapterView} object,
+     * the list item @param view,
+     *
+     * @param position of the list item view in the list view,
+     *                 the int @param id of the view
+     *                 that has been clicked on.
+     */
+    @Override
+    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+        // TODO: Implement #requestAudioFocus(AudioFocusRequest) for SDK >= Android OREO later
+        //  "Note that the return value is never {@link #AUDIOFOCUS_REQUEST_DELAYED} when focus
+        //     *     is requested without building the {@link AudioFocusRequest} with
+        //     *     {@link AudioFocusRequest.Builder#setAcceptsDelayedFocusGain(boolean)} set to
+        //     *     {@code true}." -- Documentation
+        int focus = audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+        switch (focus) {
+            // start playback if audio focus is granted
+            case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
+                mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
+                initialisePlayer();
+                playAudioFile();
+                break;
+            case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                break;
+        }
+
+
+        // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
+        //  audio item to the object
+        controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
+                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                Long.parseLong(mAudioCursor.getString(
+                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+
+        // show the {@link MediaControlsFragment} Fragment
+        showControlsFragment();
     }
 
     public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
@@ -310,6 +299,17 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mAudioPlayer.release();
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
+    }
+
+    /**
+     * A callback method to handle {@link Audio} file completions.
+     * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
+     */
+    @Override
+    public void onCompletion (MediaPlayer mp) {
+        // TODO: check if Fragment is visible to user first, then make this call to hide the controls
+        //  fragment or postpone it till onResumed()
+        getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
     @Override
