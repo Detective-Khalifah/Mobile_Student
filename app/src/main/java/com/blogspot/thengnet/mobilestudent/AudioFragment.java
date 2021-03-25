@@ -98,6 +98,39 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
         audioPlayManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
 
+        // create and initialise the ArrayAdapter<Audio> object
+        // to parse the {@link Audio} list item views
+        audioAdapter = new AudioAdapter(getContext(), null);
+
+        // instantiate the {@link mAudioPlayer} object
+        mAudioPlayer = new MediaPlayer();
+
+        // register callback methods for the {@link mAudioPlayer} object
+        mAudioPlayer.setOnCompletionListener(this);
+        mAudioPlayer.setOnErrorListener(this);
+
+        getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
+    }
+
+    @Override
+    public View onCreateView (LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState) {
+        View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
+
+        // Inflate the layout for this fragment
+        return audioRoot;
+    }
+
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Set the {@link audioAdapter} ArrayAdapter on the ListView
+        ListView lvAudio = (ListView) view.findViewById(R.id.lv_audio);
+        lvAudio.setAdapter(audioAdapter);
+
+        lvAudio.setOnItemClickListener(this);
+
         // definition of #OnAudioFocusChangeListener for the audio player
         audioFocus = new AudioManager.OnAudioFocusChangeListener() {
             @Override
@@ -137,39 +170,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                 }
             }
         };
-
-        // create and initialise the ArrayAdapter<Audio> object
-        // to parse the {@link Audio} list item views
-        audioAdapter = new AudioAdapter(getContext(), null);
-
-        // instantiate the {@link mAudioPlayer} object
-        mAudioPlayer = new MediaPlayer();
-
-        // register callback methods for the {@link mAudioPlayer} object
-        mAudioPlayer.setOnCompletionListener(this);
-        mAudioPlayer.setOnErrorListener(this);
-
-        getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
-    }
-
-    @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
-        View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
-
-        // Inflate the layout for this fragment
-        return audioRoot;
-    }
-
-    @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Set the {@link audioAdapter} ArrayAdapter on the ListView
-        ListView lvAudio = (ListView) view.findViewById(R.id.lv_audio);
-        lvAudio.setAdapter(audioAdapter);
-
-        lvAudio.setOnItemClickListener(this);
 
         getLoaderManager().restartLoader(AUDIO_LOADER_ID, null, this);
     }
