@@ -24,6 +24,8 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private ImageView imgPlay, imgPrev, imgNext;
     private TextView tvTrackTitle;
 
+    private static AudioFragment audioFrag = new AudioFragment();
+
     public MediaControlsFragment () {
         // Required empty public constructor
     }
@@ -83,17 +85,9 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick (View v) {
-        AudioFragment audioFrag = new AudioFragment();
-
         switch (v.getId()) {
             case R.id.btn_play_pause:
-                if (audioFrag.isPlaying()) {
-                    imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
-                    audioFrag.pausePlayback();
-                } else {
-                    imgPlay.setImageResource(R.drawable.baseline_play_arrow_black_48);
-                    audioFrag.playAudioFile();
-                }
+                pausePlayBack();
             case R.id.btn_prev_track:
             case R.id.btn_next_track:
                 break;
@@ -110,7 +104,14 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private void fastForward (View fastForwardButton) {
     }
 
-    private void pausePlayBack (View pausePlayButton) {
+    private void pausePlayBack () {
+        if (audioFrag.isPlaying()) {
+            imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
+            audioFrag.pausePlayback();
+        } else {
+            imgPlay.setImageResource(R.drawable.baseline_play_arrow_black_48);
+            audioFrag.playAudioFile();
+        }
     }
 
     private void rewind (View rewindButton) {
