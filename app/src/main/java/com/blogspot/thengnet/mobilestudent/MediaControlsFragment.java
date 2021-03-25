@@ -2,7 +2,6 @@ package com.blogspot.thengnet.mobilestudent;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.TextView;
  * A simple {@link Fragment} subclass.
  * Use the empty constructor to create an instance of this fragment.
  */
-public class MediaControlsFragment extends Fragment {
+public class MediaControlsFragment extends Fragment implements View.OnClickListener {
 
     // track controller initialiser keys
     private static final String TRACK_TITLE_KEY = "track_title";
@@ -71,9 +70,35 @@ public class MediaControlsFragment extends Fragment {
         tvTrackTitle = (TextView) view.findViewById(R.id.tv_track_title);
         tvTrackTitle.setText(trackTitle);
 
+        // ImageView lookup
         imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
         imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
         imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
+
+        // attach event-handler -- #View.OnClickListener
+        imgPlay.setOnClickListener(this);
+        imgPrev.setOnClickListener(this);
+        imgNext.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick (View v) {
+        AudioFragment audioFrag = new AudioFragment();
+
+        switch (v.getId()) {
+            case R.id.btn_play_pause:
+                if (audioFrag.isPlaying()) {
+                    imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
+                    audioFrag.pausePlayback();
+                } else {
+                    imgPlay.setImageResource(R.drawable.baseline_play_arrow_black_48);
+                    audioFrag.playAudioFile();
+                }
+            case R.id.btn_prev_track:
+            case R.id.btn_next_track:
+                break;
+            default:
+        }
     }
 
     protected void setAudioMetrics (String title, long position) {
