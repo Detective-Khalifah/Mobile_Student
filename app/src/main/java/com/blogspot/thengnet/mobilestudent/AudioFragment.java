@@ -270,6 +270,19 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         return false;
     }
 
+    /**
+     * Helper method to check playback status
+     *
+     * @return #mAudioPlayer state
+     */
+    protected boolean isPlaying () {
+        if (mAudioPlayer != null) {
+            if (mAudioPlayer.isPlaying())
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onError (MediaPlayer mp, int what, int extra) {
         return false;
