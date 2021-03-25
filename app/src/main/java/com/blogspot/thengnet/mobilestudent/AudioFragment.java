@@ -119,12 +119,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // to parse the {@link Audio} list item views
         audioAdapter = new AudioAdapter(getContext(), null);
 
-        // instantiate the {@link mAudioPlayer} object
-        mAudioPlayer = new MediaPlayer();
-
-        // register callback methods for the {@link mAudioPlayer} object
-        mAudioPlayer.setOnCompletionListener(this);
-        mAudioPlayer.setOnErrorListener(this);
+        initialisePlayer();
 
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
     }
@@ -241,6 +236,24 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
     // TODO: find a way - if any, besides LiveData + ViewModel - to handle click events on the
     //  child fragment's views.
+
+    /**
+     * A method to initialise the #mAudioPlayer object if it is not already instantiated
+     */
+    protected void initialisePlayer () {
+        if (mAudioPlayer != null) {
+            // reset the {@link MediaPlayer} object
+            mAudioPlayer.reset();
+            return;
+        }
+
+        // instantiate the {@link mAudioPlayer} object
+        mAudioPlayer = new MediaPlayer();
+
+        // register callback methods for the {@link mAudioPlayer} object
+        mAudioPlayer.setOnCompletionListener(this);
+        mAudioPlayer.setOnErrorListener(this);
+    }
 
     /**
      * Start playback of the #mAudioPlayer object
