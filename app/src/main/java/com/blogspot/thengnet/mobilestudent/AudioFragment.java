@@ -3,6 +3,7 @@ package com.blogspot.thengnet.mobilestudent;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,15 +31,17 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         MediaPlayer.OnErrorListener {
 
     private static final int AUDIO_LOADER_ID = 3;
-
+    private static Context appContext;
+    private static AudioManager audioPlayManager;
+    private final String LOG_TAG = AudioFragment.class.getName();
     private static Cursor audioCursor;
     private static MediaPlayer mAudioPlayer;
-    private final String LOG_TAG = AudioFragment.class.getName();
-    AudioAdapter audioAdapter;
-    MediaControlsFragment controlsFragment;
-    FragmentManager childrenManager;
-    FragmentTransaction channel;
     private Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    private AudioAdapter audioAdapter;
+    private MediaControlsFragment controlsFragment;
+    private FragmentManager childrenManager;
+    private FragmentTransaction channel;
+    private AudioManager.OnAudioFocusChangeListener audioFocus;
 
     public AudioFragment () {
         // Required empty public constructor
@@ -89,6 +92,51 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // context of the app
+        appContext = this.getContext();
+
+        audioPlayManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+
+        // definition of #OnAudioFocusChangeListener for the audio player
+        audioFocus = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange (int focusChange) {
+                switch (focusChange) {
+
+                    // Focus gain, with expectation previous holder stops playback
+                    // AUDIOFOCUS_REQUEST_GRANTED OR AUDIOFOCUS_REQUEST_DELAYED
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        // Start playback
+                        break;
+                    // Focus gain, with expectation of releasing focus momentarily
+                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                        // Start playback
+                        break;
+
+                    // Focus gain, with expectation of releasing focus momentarily, allowing others to 'duck'
+                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                        // lower volume while playing
+                        break;
+
+                    // Focus loss, with expectation of re-gaining momentarily and ducking respectively
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        // Pause playback
+                        break;
+
+                    // Focus loss, without expectation of getting soon or ever
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        // Stop playback and abandon audio focus
+                        break;
+                    // Focus gain, with expectation of releasing focus momentarily, disabling all other playback (system & app)
+                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
+                        // do not play -- abandon audio focus
+                        break;
+                    default:
+                }
+            }
+        };
 
         // create and initialise the ArrayAdapter<Audio> object
         // to parse the {@link Audio} list item views
