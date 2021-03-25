@@ -106,11 +106,11 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
 
     private void pausePlayBack () {
         if (audioFrag.isPlaying()) {
-            imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
             audioFrag.pausePlayback();
-        } else {
             imgPlay.setImageResource(R.drawable.baseline_play_arrow_black_48);
+        } else {
             audioFrag.playAudioFile();
+            imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
         }
     }
 
