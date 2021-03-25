@@ -246,6 +246,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         if (mAudioPlayer != null) {
             // reset the {@link MediaPlayer} object
             mAudioPlayer.reset();
+            try {
+                // change data source to a different file at {@link path}
+                mAudioPlayer.setDataSource(mAppContext, mCurrentAudioUri);
+
+                // transition to prepared state
+                mAudioPlayer.prepare();
+            } catch (IOException ioE) {
+                ioE.printStackTrace();
+            }
             return;
         }
 
@@ -264,18 +273,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      * otherwise false.
      */
     protected void playAudioFile () {
-        try {
-            // change data source to a different file at {@link path}
-            mAudioPlayer.setDataSource(mAppContext, mCurrentAudioUri);
-
-            // transition to prepared state
-            mAudioPlayer.prepare();
-
+        if (mAudioPlayer != null)
             // start playing the audio file
             mAudioPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
