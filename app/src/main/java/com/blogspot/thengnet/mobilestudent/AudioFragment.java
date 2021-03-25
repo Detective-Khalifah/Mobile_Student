@@ -72,7 +72,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             // start playback if audio focus is granted
             case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
                 mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
-                playAudioFile(getContext(), mCurrentAudioUri);
+                playAudioFile();
                 break;
             case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
                 break;
@@ -161,14 +161,14 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
                         // Start playback
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
-                        playAudioFile(getContext(), mCurrentAudioUri);
+                        playAudioFile();
                         break;
 
                     // Focus gain, with expectation of releasing focus momentarily, allowing others to 'duck'
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
                         // lower volume while playing
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
-                        playAudioFile(getContext(), mCurrentAudioUri);
+                        playAudioFile();
                         break;
 
                     // Focus loss, with expectation of re-gaining momentarily and ducking respectively
@@ -243,31 +243,24 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     //  child fragment's views.
 
     /**
-     * Use the @param context of the current activity and @param path of the audio file
-     * to play it.
+     * Start playback of the #mAudioPlayer object
      *
      * @return true when mAudioPlayer has been initialised -- left the Idle State prior
      * otherwise false.
      */
-    private boolean playAudioFile (Context context, Uri path) {
-        if (mAudioPlayer != null) {
-            // reset the {@link MediaPlayer} object
-            mAudioPlayer.reset();
-            try {
-                // change data source to a different file at {@link path}
-                mAudioPlayer.setDataSource(context, path);
+    protected void playAudioFile () {
+        try {
+            // change data source to a different file at {@link path}
+            mAudioPlayer.setDataSource(mAppContext, mCurrentAudioUri);
 
-                // transition to prepared state
-                mAudioPlayer.prepare();
+            // transition to prepared state
+            mAudioPlayer.prepare();
 
-                // start playing the audio file
-                mAudioPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return true;
+            // start playing the audio file
+            mAudioPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
     /**
