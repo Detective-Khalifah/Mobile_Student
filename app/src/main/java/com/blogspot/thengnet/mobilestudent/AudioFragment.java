@@ -27,8 +27,7 @@ import java.io.IOException;
  * A simple {@link Fragment} subclass for audio files.
  */
 public class AudioFragment extends Fragment implements AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnErrorListener {
+        LoaderManager.LoaderCallbacks<Cursor>, MediaPlayer.OnCompletionListener {
 
     private static final int AUDIO_LOADER_ID = 3;
     private static final String LOG_TAG = AudioFragment.class.getName();
@@ -252,7 +251,20 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
         // register callback methods for the {@link mAudioPlayer} object
         mAudioPlayer.setOnCompletionListener(this);
-        mAudioPlayer.setOnErrorListener(this);
+
+        mAudioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError (MediaPlayer mp, int what, int extra) {
+                if (mp != null) {
+                    stopPlayback();
+                    mp.reset();
+                    // Successfully handled error
+                    return true;
+                }
+                // Unsuccessfully handled error
+                return false;
+            }
+        });
     }
 
     /**
@@ -307,14 +319,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     @Override
     public void onCompletion (MediaPlayer mp) {
-        // TODO: check if Fragment is visible to user first, then make this call to hide the controls
-        //  fragment or postpone it till onResumed()
+        // TODO: check if Fragment is visible to user first, then make this call to hide the
+        //  controls fragment or postpone it till onResumed()
         getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
-    }
-
-    @Override
-    public boolean onError (MediaPlayer mp, int what, int extra) {
-        return false;
     }
 
 }
