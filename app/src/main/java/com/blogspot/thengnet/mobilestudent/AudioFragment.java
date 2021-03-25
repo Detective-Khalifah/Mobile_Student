@@ -275,7 +275,10 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             public void onCompletion (MediaPlayer mp) {
                 // TODO: check if Fragment is visible to user first, then make this call to hide the
                 //  controls fragment or postpone it till onResumed()
-                getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
+
+                // release resources, hide {@link MediaControlsFragment} if this {@link Fragment}
+                // is in the #onResumed state.
+                stopPlayback();
             }
         });
 
@@ -338,6 +341,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mAudioPlayer.release();
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
+        if (this.isResumed())
+            getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
 }
