@@ -59,6 +59,12 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     @Override
+    public void onResume () {
+        super.onResume();
+        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -103,31 +109,42 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                     case AudioManager.AUDIOFOCUS_GAIN:
                         // Focus gain, with expectation of releasing focus momentarily
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                        // Start playback
+                        // Set the volume to "normal state" and start playback
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
+                        if (mAudioPlayer == null)
+                            initialisePlayer();
+                        mAudioPlayer.setVolume(1f, 1f);
                         playAudioFile();
                         break;
 
-                    // Focus gain, with expectation of releasing focus momentarily, allowing others to 'duck'
+                    // Focus gain, with expectation of releasing focus momentarily, allowing others
+                    // to 'duck'
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                        // lower volume while playing
+                        // Pause playback
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
-                        playAudioFile();
+                        if (isPlaying())
+                            pausePlayback();
                         break;
 
                     // Focus loss, with expectation of re-gaining momentarily and ducking respectively
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        // Pause playback
+                        // Lower volume while playing; check if mAudioPlayer object is instantiated
+                        // and being played, then lower volume; initialise and play at low volume.
+                        // otherwise.
+                        if (mAudioPlayer == null)
+                            initialisePlayer();
+                        mAudioPlayer.setVolume(.3f, .3f);
+                        playAudioFile();
                         break;
 
                     // Focus loss, without expectation of getting soon or ever
                     case AudioManager.AUDIOFOCUS_LOSS:
                         // Stop playback and abandon audio focus
-                        break;
-                    // Focus gain, with expectation of releasing focus momentarily, disabling all other playback (system & app)
+                        // Focus gain, with expectation of releasing focus momentarily, disabling all other playback (system & app)
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
                         // do not play -- abandon audio focus
+                        stopPlayback();
                         break;
                     default:
                 }
@@ -162,6 +179,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                 playAudioFile();
                 break;
             case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                stopPlayback();
                 break;
         }
 
