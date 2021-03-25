@@ -72,6 +72,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             // start playback if audio focus is granted
             case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
                 mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
+                initialisePlayer();
                 playAudioFile();
                 break;
             case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
