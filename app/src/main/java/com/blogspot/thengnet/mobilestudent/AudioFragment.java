@@ -289,6 +289,17 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         return false;
     }
 
+    // TODO: Use ternary operator for short, non-complex lines.
+
+    /**
+     * A method to pause playback of the #mAudioPlayer object.
+     */
+    protected void pausePlayback () {
+        if (mAudioPlayer != null) {
+            mAudioPlayer.pause();
+        }
+    }
+
     @Override
     public boolean onError (MediaPlayer mp, int what, int extra) {
         return false;
