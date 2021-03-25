@@ -235,8 +235,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
         channel.commit();
     }
-    // TODO: find a way - if any, besides LiveData + ViewModel - to handle click events on the
+    // TODO: Implement LiveData + ViewModel - to handle click events on the
     //  child fragment's views.
+    //  Also use it to handle playback across Fragments.
 
     /**
      * A method to initialise the #mAudioPlayer object if it is not already instantiated
@@ -298,6 +299,16 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     protected void pausePlayback () {
         if (mAudioPlayer != null) {
             mAudioPlayer.pause();
+        }
+    }
+
+    /**
+     * Stop playback and release resources hoarded by #mAudioPlayer.
+     */
+    protected void stopPlayback () {
+        if (mAudioPlayer != null) {
+            mAudioPlayer.release();
+            audioPlayManager.abandonAudioFocus(audioFocus);
         }
     }
 
