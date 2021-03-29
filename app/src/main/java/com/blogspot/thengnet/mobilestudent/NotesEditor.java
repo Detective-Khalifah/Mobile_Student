@@ -21,7 +21,9 @@ public class NotesEditor extends AppCompatActivity {
     private static String noteTitle, noteContent, previousTitle, previousContent;
     private static Uri mNoteUri;
 
-    TextInputEditText editTitle, editContent;
+    private Snackbar editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "",
+            Snackbar.LENGTH_SHORT);
+    private TextInputEditText editTitle, editContent;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -47,11 +49,11 @@ public class NotesEditor extends AppCompatActivity {
             case R.id.menu_save:
                 if (mNoteUri != null) {
                     updateNote();
-                    finish();
+//                    finish();
                     break;
                 }
                 saveNote();
-                finish();
+//                finish();
                 break;
             case android.R.id.home:
                 finish();
@@ -110,13 +112,10 @@ public class NotesEditor extends AppCompatActivity {
         noteTitle = editTitle.getText().toString().trim();
         noteContent = editContent.getText().toString().trim();
 
-        Snackbar updateNotify = null;
-
         // Ascertain changes were made to the notes's title or content
         if (noteTitle.equalsIgnoreCase(previousTitle) || noteContent.equalsIgnoreCase(previousContent)) {
-            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    "No changes were made!", Snackbar.LENGTH_SHORT);
-            updateNotify.show();
+            editNotify.setText("No changes were made!");
+            editNotify.show();
             return;
         }
 
@@ -130,13 +129,11 @@ public class NotesEditor extends AppCompatActivity {
         int notesUpdated = getContentResolver()
                 .update(mNoteUri, updateValues, null, null);
         if (notesUpdated == 1) {
-            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    getString(R.string.note_editor_successful_update), Snackbar.LENGTH_SHORT);
+            editNotify.setText(getString(R.string.note_editor_successful_update));
         } else {
-            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    getString(R.string.note_editor_unsuccessful_update), Snackbar.LENGTH_SHORT);
+            editNotify.setText(getString(R.string.note_editor_unsuccessful_update));
         }
-        updateNotify.show();
+        editNotify.show();
     }
 
     private void saveNote () {
@@ -144,7 +141,6 @@ public class NotesEditor extends AppCompatActivity {
         noteContent = editContent.getText().toString();
         String[] matchArgs = new String[]{noteTitle, noteContent};
 
-        Snackbar editNotify = null;
         Cursor matchFound = null;
 
         if (checkIfFieldsEmpty()) return;
@@ -156,8 +152,7 @@ public class NotesEditor extends AppCompatActivity {
                     matchArgs, null);
 
             if (matchFound != null && matchFound.getCount() > 0) {
-                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Note already exists!",
-                        Snackbar.LENGTH_SHORT);
+                editNotify.setText("Note already exists!");
                 editNotify.show();
                 return;
             }
@@ -175,37 +170,28 @@ public class NotesEditor extends AppCompatActivity {
 
         Uri ins = getContentResolver().insert(NoteContract.NoteEntry.CONTENT_URI, values);
         if (ins != null) {
-            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    getString(R.string.note_editor_successful_save), Snackbar.LENGTH_SHORT);
+            editNotify.setText(getString(R.string.note_editor_successful_save));
         } else {
-            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    getString(R.string.note_editor_unsuccessful_save), Snackbar.LENGTH_SHORT);
+            editNotify.setText(getString(R.string.note_editor_unsuccessful_save));
         }
         editNotify.show();
 
     }
 
     private boolean checkIfFieldsEmpty () {
-        Snackbar editNotify;
         if (noteTitle.equals("") && noteContent.equals("")) {
-            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    "Title & Content cannot be empty!",
-                    Snackbar.LENGTH_SHORT);
+            editNotify.setText("Title & Content cannot be empty!");
             editNotify.show();
             return true;
         } else {
             if (noteTitle.equals("")) {
-                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                        "Title cannot be empty!",
-                        Snackbar.LENGTH_SHORT);
+                editNotify.setText("Title cannot be empty!");
                 editNotify.show();
                 return true;
             }
 
             if (noteContent.equals("")) {
-                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                        "Content cannot be empty!",
-                        Snackbar.LENGTH_SHORT);
+                editNotify.setText("Content cannot be empty!");
                 editNotify.show();
                 return true;
             }
