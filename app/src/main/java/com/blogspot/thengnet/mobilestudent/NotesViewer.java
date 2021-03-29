@@ -3,8 +3,6 @@ package com.blogspot.thengnet.mobilestudent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -15,11 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.blogspot.thengnet.mobilestudent.R;
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
 
 public class NotesViewer extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static Uri noteUri;
+    private static Uri mNoteUri;
     private TextView tvNoteTitle, tvNoteContent;
 
     @Override
@@ -28,7 +25,7 @@ public class NotesViewer extends AppCompatActivity implements LoaderManager.Load
         setContentView(R.layout.activity_notes_viewer);
 
         Intent currentNoteDeets = getIntent();
-        noteUri = currentNoteDeets.getData();
+        mNoteUri = currentNoteDeets.getData();
 
         tvNoteTitle = (TextView) findViewById(R.id.notes_viewer_title);
         tvNoteContent = (TextView) findViewById(R.id.notes_viewer_content);
@@ -45,21 +42,14 @@ public class NotesViewer extends AppCompatActivity implements LoaderManager.Load
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
         if (item.getItemId() == R.id.menu_edit) {
-            editSavedNote();
+            // Start the {@link NotesEditor} Activity, passing mNoteUri to query in the database.
+            startActivity(new Intent(this, NotesEditor.class).setData(mNoteUri));
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void editSavedNote () {
-        Intent editNote = new Intent(this, NotesEditor.class);
-        editNote.putExtra("note_title", tvNoteTitle.getText());
-        editNote.putExtra("note_content", tvNoteContent.getText());
-
-        startActivity(editNote);
-    }
-
     public Loader<Cursor> onCreateLoader (int id, Bundle bundle) {
-        return new CursorLoader(this, noteUri, null, null, null, null);
+        return new CursorLoader(this, mNoteUri, null, null, null, null);
     }
 
     @Override
@@ -71,8 +61,6 @@ public class NotesViewer extends AppCompatActivity implements LoaderManager.Load
 
         String title = cursor.getString(titleIndex);
         String content = cursor.getString(contentIndex);
-        Log.v(NotesViewer.class.getSimpleName(), "Title: " + title);
-        Log.v(NotesViewer.class.getSimpleName(), "Content: " + content);
 
         tvNoteTitle.setText(title);
         tvNoteContent.setText(content);
