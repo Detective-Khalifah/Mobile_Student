@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -50,10 +49,31 @@ public class AudioAdapter extends CursorAdapter {
 
         if (hour > 0)
             time.append(hour).append(":");
-        if (minute > 0)
-            time.append(minute).append(":");
-        if (second > 0)
-            time.append(second);
+
+        if (minute > 9) {
+            if (minute > 59) {
+                long remainingMinutes = minute - ((minute / 60) * 60);
+                if (remainingMinutes > 9)
+                    time.append(remainingMinutes).append(":");
+                else
+                    time.append("0").append(remainingMinutes).append(":");
+            } else
+                time.append(minute).append(":");
+        } else
+            time.append("0").append(minute).append(":");
+
+        if (second > 9) {
+            if (second > 59) {
+                long remainingSeconds = second - (second / 60) * 60;
+                if (remainingSeconds > 9)
+                    time.append(remainingSeconds);
+                else
+                    time.append("0").append(remainingSeconds);
+            } else
+                time.append(second);
+        } else {
+            time.append("0").append(second);
+        }
 
         return sdFormatter.format(new java.sql.Date(Long.parseLong(milliseconds))) + " -- " + time;
     }
