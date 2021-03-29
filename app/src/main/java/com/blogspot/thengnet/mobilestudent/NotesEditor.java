@@ -145,18 +145,27 @@ public class NotesEditor extends AppCompatActivity {
         String[] matchArgs = new String[]{noteTitle, noteContent};
 
         Snackbar editNotify = null;
+        Cursor matchFound = null;
 
         if (checkIfFieldsEmpty()) return;
 
-        Cursor matchFound = getContentResolver().query(NoteContract.NoteEntry.CONTENT_URI, null,
-                NoteContract.NoteEntry.COLUMN_NOTE_TITLE + "=? OR " +
-                        NoteContract.NoteEntry.COLUMN_NOTE_CONTENT + "=?",
-                matchArgs, null);
-        if (matchFound != null && matchFound.getCount() > 0) {
-            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Note already exists!",
-                    Snackbar.LENGTH_SHORT);
-            editNotify.show();
-            return;
+        try {
+            matchFound = getContentResolver().query(NoteContract.NoteEntry.CONTENT_URI, null,
+                    NoteContract.NoteEntry.COLUMN_NOTE_TITLE + "=? OR " +
+                            NoteContract.NoteEntry.COLUMN_NOTE_CONTENT + "=?",
+                    matchArgs, null);
+
+            if (matchFound != null && matchFound.getCount() > 0) {
+                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Note already exists!",
+                        Snackbar.LENGTH_SHORT);
+                editNotify.show();
+                return;
+            }
+        } catch (NullPointerException npe) {
+            npe.getMessage();
+        } finally {
+            if (matchFound != null)
+                matchFound.close();
         }
 
         ContentValues values = new ContentValues();
