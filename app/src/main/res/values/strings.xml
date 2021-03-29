@@ -17,6 +17,8 @@
     <!-- Note Editor status messages -->
     <string name="note_editor_successful_save">Note saved!</string>
     <string name="note_editor_unsuccessful_save">Note could note be saved…</string>
+    <string name="note_editor_successful_update">Note updated!</string>
+    <string name="note_editor_unsuccessful_update">Note could not be updated…</string>
 
     <!-- Notes sub-app string values -->
     <string name="last_updated">Last updated:</string>
