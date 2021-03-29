@@ -90,7 +90,9 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
             case R.id.btn_play_pause:
                 pausePlayBack();
             case R.id.btn_prev_track:
+                audioFrag.rewind();
             case R.id.btn_next_track:
+                audioFrag.fastForward();
                 break;
             default:
         }
@@ -102,8 +104,6 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
 
     // TODO: Use clickListener & LongClickListener for the "next track" and fast-forward features
     //  respectively
-    private void fastForward (View fastForwardButton) {
-    }
 
     private void pausePlayBack () {
         if (audioFrag.isPlaying()) {
@@ -115,6 +115,4 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private void rewind (View rewindButton) {
-    }
 }

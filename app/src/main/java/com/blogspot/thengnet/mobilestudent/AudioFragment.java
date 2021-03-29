@@ -364,4 +364,15 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
+    protected void fastForward () {
+        if (isPlaying()) {
+            mAudioPlayer.seekTo(mAudioPlayer.getCurrentPosition() + 10000);
+        }
+    }
+
+    protected void rewind () {
+        if (isPlaying()) {
+            mAudioPlayer.seekTo(mAudioPlayer.getCurrentPosition() - 10000);
+        }
+    }
 }
