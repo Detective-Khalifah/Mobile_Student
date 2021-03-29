@@ -7,6 +7,7 @@
     <string name="media_pages_label">Media</string>
     <string name="calculator_activity_label">Calculator</string>
     <string name="note_viewer_label">Note Viewer</string>
+    <string name="note_editor_label">Note Editor</string>
 
     <!-- Menu item labels -->
     <string name="menu_save">Save</string>
