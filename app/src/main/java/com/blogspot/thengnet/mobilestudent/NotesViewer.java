@@ -11,6 +11,8 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.blogspot.thengnet.mobilestudent.R;
@@ -32,6 +34,28 @@ public class NotesViewer extends AppCompatActivity implements LoaderManager.Load
         tvNoteContent = (TextView) findViewById(R.id.notes_viewer_content);
 
         getSupportLoaderManager().restartLoader(106, null, this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.viewer_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+        if (item.getItemId() == R.id.menu_edit) {
+            editSavedNote();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void editSavedNote () {
+        Intent editNote = new Intent(this, NotesEditor.class);
+        editNote.putExtra("note_title", tvNoteTitle.getText());
+        editNote.putExtra("note_content", tvNoteContent.getText());
+
+        startActivity(editNote);
     }
 
     public Loader<Cursor> onCreateLoader (int id, Bundle bundle) {
