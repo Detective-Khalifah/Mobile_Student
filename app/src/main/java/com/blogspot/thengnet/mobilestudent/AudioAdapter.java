@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class AudioAdapter extends CursorAdapter {
@@ -38,7 +36,6 @@ public class AudioAdapter extends CursorAdapter {
     }
 
     private String timeConverter (String milliseconds) {
-        SimpleDateFormat sdFormatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         long hour, minute, second, millisecond;
         millisecond = Long.parseLong(milliseconds);
         StringBuilder time = new StringBuilder();
@@ -75,6 +72,6 @@ public class AudioAdapter extends CursorAdapter {
             time.append("0").append(second);
         }
 
-        return sdFormatter.format(new java.sql.Date(Long.parseLong(milliseconds))) + " -- " + time;
+        return String.valueOf(time);
     }
 }
