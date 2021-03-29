@@ -23,11 +23,30 @@ public class MainActivity extends AppCompatActivity {
         notesFrag = new NotesFragment();
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_view);
-        bottomNavigationView.getMenu().getItem(1).setChecked(true);
 
-        // Replace #FrameLayout content with {@link NotesFragment} at startup
-        currentFragment = notesFrag;
-        displayNotesFrag();
+        // if a Fragment is already in view when #onStop got called, re-display it.
+        if (savedInstanceState != null) {
+            String fragmentTag = savedInstanceState.getString("current-fragment-tag");
+            switch (fragmentTag) {
+                case "calculator-frag":
+                    currentFragment = calcFrag;
+                    displayCalculatorFrag();
+                    break;
+                case "media-frag":
+                    currentFragment = mediaFrag;
+                    displayMediaFrag();
+                    break;
+                case "notes-frag":
+                    currentFragment = notesFrag;
+                    displayNotesFrag();
+                    break;
+            }
+        } else {
+            // Replace #FrameLayout content with {@link NotesFragment} at startup
+            currentFragment = notesFrag;
+            displayNotesFrag();
+            bottomNavigationView.getMenu().getItem(1).setChecked(true);
+        }
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -56,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (currentFragment != null)
+            outState.putString("current-fragment-tag", currentFragment.getTag());
+    }
+
     /**
      * Use a {@link FragmentTransaction} to add/show the {@link SimpleCalculatorFragment} and hide
      * other 2 fragments -- {@link MediaFragment} & {@link NotesFragment}.
@@ -68,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment.isAdded()) {
             calculatorFragTransaction.show(currentFragment);
         } else {
-            calculatorFragTransaction.add(R.id.fragment_frame, currentFragment);
+            calculatorFragTransaction.add(R.id.fragment_frame, currentFragment, "calculator-frag");
         }
 
         // Hide the Media and Notes Fragments
@@ -76,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             calculatorFragTransaction.hide(mediaFrag);
         if (notesFrag.isAdded())
             calculatorFragTransaction.hide(notesFrag);
+        calculatorFragTransaction.remove(notesFrag);
 
         // commit changes made on {@link FragmentTransaction} #calculatorFragTransaction
         calculatorFragTransaction.commit();
@@ -93,12 +120,13 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment.isAdded()) {
             ft.show(currentFragment);
         } else {
-            ft.add(R.id.fragment_frame, currentFragment);
+            ft.add(R.id.fragment_frame, currentFragment, "notes-frag");
         }
 
         // Hide the Simple Calculator and Media Fragments
         if (calcFrag.isAdded())
             ft.hide(calcFrag);
+        ft.remove(calcFrag);
         if (mediaFrag.isAdded())
             ft.hide(mediaFrag);
 
@@ -118,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment.isAdded()) {
             mediaTransact.show(currentFragment);
         } else {
-            mediaTransact.add(R.id.fragment_frame, currentFragment);
+            mediaTransact.add(R.id.fragment_frame, currentFragment, "media-frag");
         }
 
         // Hide the Simple Calculator & Notes Fragments
