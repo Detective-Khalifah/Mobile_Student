@@ -65,6 +65,24 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     @Override
+    public void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mAudioPlayer != null) {
+            outState.putString("previous-playback-audio", String.valueOf(mCurrentAudioUri));
+        }
+    }
+
+    /**
+     * Call #stopPlayback if screen is covered by components like another Activity.
+     */
+    // TODO: Find a way to keep playback data and continue playback when blocker is away!
+    @Override
+    public void onPause () {
+        super.onPause();
+        stopPlayback();
+    }
+
+    @Override
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -113,7 +131,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                         Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
                         if (mAudioPlayer == null)
                             initialisePlayer();
-                        mAudioPlayer.setVolume(1f, 1f);
+                        else
+                            mAudioPlayer.setVolume(1f, 1f);
                         playAudioFile();
                         break;
 
@@ -287,7 +306,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             public boolean onError (MediaPlayer mp, int what, int extra) {
                 if (mp != null) {
                     stopPlayback();
-                    mp.reset();
+//                    mp.reset();
                     // Successfully handled error
                     return true;
                 }
@@ -341,7 +360,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mAudioPlayer.release();
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
-        if (this.isResumed())
+        if (this.isVisible())
             getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
