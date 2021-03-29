@@ -10,6 +10,7 @@
 
     <!-- Menu item labels -->
     <string name="menu_save">Save</string>
+    <string name="menu_edit">Edit</string>
 
     <string name="track_title">Beethoven\'s 5th Symphony</string>
 
