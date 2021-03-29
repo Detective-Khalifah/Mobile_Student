@@ -18,7 +18,7 @@ import java.util.Date;
 
 public class NotesEditor extends AppCompatActivity {
 
-    private static String noteTitle, noteContent;
+    private static String noteTitle, noteContent, previousTitle, previousContent;
     private static Uri mNoteUri;
 
     TextInputEditText editTitle, editContent;
@@ -76,10 +76,17 @@ public class NotesEditor extends AppCompatActivity {
             if (currentNote != null) {
                 currentNote.moveToFirst();
 
-                editTitle.setText(currentNote.getString(currentNote.getColumnIndex(
-                        NoteContract.NoteEntry.COLUMN_NOTE_TITLE)));
-                editContent.setText(currentNote.getString(currentNote.getColumnIndex(
-                        NoteContract.NoteEntry.COLUMN_NOTE_CONTENT)));
+                // Fetch saved note title and set fetched text on the #editTitle
+                // {@link TextInputEditText}
+                previousTitle = currentNote.getString(currentNote.getColumnIndex(
+                        NoteContract.NoteEntry.COLUMN_NOTE_TITLE));
+                editTitle.setText(previousTitle);
+
+                // Fetch saved note content and set fetched text on the #editContent
+                // {@link TextInputEditText}
+                previousContent = currentNote.getString(currentNote.getColumnIndex(
+                        NoteContract.NoteEntry.COLUMN_NOTE_CONTENT));
+                editContent.setText(previousContent);
             } else
                 throw new CursorIndexOutOfBoundsException("Could not find note!");
         } catch (CursorIndexOutOfBoundsException cursorException) {
@@ -103,6 +110,14 @@ public class NotesEditor extends AppCompatActivity {
         noteContent = editContent.getText().toString().trim();
 
         Snackbar updateNotify = null;
+
+        // Ascertain changes were made to the notes's title or content
+        if (noteTitle.equals(previousTitle) || noteContent.equals(previousContent)) {
+            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                    "No changes were made!", Snackbar.LENGTH_SHORT);
+            updateNotify.show();
+            return;
+        }
 
         if (checkIfFieldsEmpty()) return;
 
