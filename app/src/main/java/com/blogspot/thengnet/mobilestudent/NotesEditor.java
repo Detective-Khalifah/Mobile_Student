@@ -142,10 +142,22 @@ public class NotesEditor extends AppCompatActivity {
     private void saveNote () {
         noteTitle = editTitle.getText().toString().trim();
         noteContent = editContent.getText().toString();
+        String[] matchArgs = new String[]{noteTitle, noteContent};
 
         Snackbar editNotify = null;
 
         if (checkIfFieldsEmpty()) return;
+
+        Cursor matchFound = getContentResolver().query(NoteContract.NoteEntry.CONTENT_URI, null,
+                NoteContract.NoteEntry.COLUMN_NOTE_TITLE + "=? OR " +
+                        NoteContract.NoteEntry.COLUMN_NOTE_CONTENT + "=?",
+                matchArgs, null);
+        if (matchFound != null && matchFound.getCount() > 0) {
+            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "Note already exists!",
+                    Snackbar.LENGTH_SHORT);
+            editNotify.show();
+            return;
+        }
 
         ContentValues values = new ContentValues();
         values.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, noteTitle);
