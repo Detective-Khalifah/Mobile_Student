@@ -76,6 +76,18 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
             }
         });
 
+        // Set a #OnItemLongClickListener handler to start {@link NotesEditor} Activity when a Note
+        // is long clicked.
+        notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick (AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(getContext(), NotesEditor.class)
+                        .setData(ContentUris.withAppendedId(
+                                NoteContract.NoteEntry.CONTENT_URI, id)));
+                return false;
+            }
+        });
+
         getLoaderManager().initLoader(NOTES_ACTIVITY_LOADER, null, this);
     }
 
