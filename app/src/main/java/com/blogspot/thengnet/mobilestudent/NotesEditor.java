@@ -5,11 +5,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,6 +18,7 @@ import java.util.Date;
 
 public class NotesEditor extends AppCompatActivity {
 
+    private static String noteTitle, noteContent;
     private static Uri mNoteUri;
 
     TextInputEditText editTitle, editContent;
@@ -45,6 +45,10 @@ public class NotesEditor extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
+                if (mNoteUri != null) {
+                    updateNote();
+                    finish();
+                }
                 saveNote();
                 finish();
                 break;
@@ -71,10 +75,11 @@ public class NotesEditor extends AppCompatActivity {
 
             if (currentNote != null) {
                 currentNote.moveToFirst();
-                Log.v(NotesEditor.class.getName(), "Note URI: " + mNoteUri + "\n" + "CurrentNote: " + currentNote);
 
-                editTitle.setText(currentNote.getString(currentNote.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_TITLE)));
-                editContent.setText(currentNote.getString(currentNote.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_CONTENT)));
+                editTitle.setText(currentNote.getString(currentNote.getColumnIndex(
+                        NoteContract.NoteEntry.COLUMN_NOTE_TITLE)));
+                editContent.setText(currentNote.getString(currentNote.getColumnIndex(
+                        NoteContract.NoteEntry.COLUMN_NOTE_CONTENT)));
             } else
                 throw new CursorIndexOutOfBoundsException("Could not find note!");
         } catch (CursorIndexOutOfBoundsException cursorException) {
@@ -93,35 +98,38 @@ public class NotesEditor extends AppCompatActivity {
         }
     }
 
+    private void updateNote () {
+        noteTitle = editTitle.getText().toString().trim();
+        noteContent = editContent.getText().toString().trim();
+
+        Snackbar updateNotify = null;
+
+        if (checkIfFieldsEmpty()) return;
+
+        ContentValues updateValues = new ContentValues();
+        updateValues.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, noteTitle);
+        updateValues.put(NoteContract.NoteEntry.COLUMN_NOTE_CONTENT, noteContent);
+        updateValues.put(NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE, String.valueOf(new Date()));
+
+        int notesUpdated = getContentResolver()
+                .update(mNoteUri, updateValues, null, null);
+        if (notesUpdated == 1) {
+            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                    getString(R.string.note_editor_successful_update), Snackbar.LENGTH_SHORT);
+        } else {
+            updateNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                    getString(R.string.note_editor_unsuccessful_update), Snackbar.LENGTH_SHORT);
+        }
+        updateNotify.show();
+    }
+
     private void saveNote () {
-        String noteTitle = editTitle.getText().toString().trim();
-        String noteContent = editContent.getText().toString();
+        noteTitle = editTitle.getText().toString().trim();
+        noteContent = editContent.getText().toString();
 
         Snackbar editNotify = null;
 
-        if (noteTitle.equals("") && noteContent.equals("")) {
-            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                    "Title & Content cannot be empty!",
-                    Snackbar.LENGTH_SHORT);
-            editNotify.show();
-            return;
-        } else {
-            if (noteTitle.equals("")) {
-                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                        "Title cannot be empty!",
-                        Snackbar.LENGTH_SHORT);
-                editNotify.show();
-                return;
-            }
-
-            if (noteContent.equals("")) {
-                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
-                        "Content cannot be empty!",
-                        Snackbar.LENGTH_SHORT);
-                editNotify.show();
-                return;
-            }
-        }
+        if (checkIfFieldsEmpty()) return;
 
         ContentValues values = new ContentValues();
         values.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, noteTitle);
@@ -138,5 +146,33 @@ public class NotesEditor extends AppCompatActivity {
         }
         editNotify.show();
 
+    }
+
+    private boolean checkIfFieldsEmpty () {
+        Snackbar editNotify;
+        if (noteTitle.equals("") && noteContent.equals("")) {
+            editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                    "Title & Content cannot be empty!",
+                    Snackbar.LENGTH_SHORT);
+            editNotify.show();
+            return true;
+        } else {
+            if (noteTitle.equals("")) {
+                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                        "Title cannot be empty!",
+                        Snackbar.LENGTH_SHORT);
+                editNotify.show();
+                return true;
+            }
+
+            if (noteContent.equals("")) {
+                editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame),
+                        "Content cannot be empty!",
+                        Snackbar.LENGTH_SHORT);
+                editNotify.show();
+                return true;
+            }
+        }
+        return false;
     }
 }
