@@ -49,11 +49,11 @@ public class NotesEditor extends AppCompatActivity {
             case R.id.menu_save:
                 if (mNoteUri != null) {
                     updateNote();
-//                    finish();
+                    finish();
                     break;
                 }
                 saveNote();
-//                finish();
+                finish();
                 break;
             case android.R.id.home:
                 finish();
@@ -114,7 +114,7 @@ public class NotesEditor extends AppCompatActivity {
 
         // Ascertain changes were made to the notes's title or content
         if (noteTitle.equalsIgnoreCase(previousTitle) || noteContent.equalsIgnoreCase(previousContent)) {
-            editNotify.setText("No changes were made!");
+            editNotify.setText(getString(R.string.update_found_matching_note));
             editNotify.show();
             return;
         }
@@ -152,7 +152,7 @@ public class NotesEditor extends AppCompatActivity {
                     matchArgs, null);
 
             if (matchFound != null && matchFound.getCount() > 0) {
-                editNotify.setText("Note already exists!");
+                editNotify.setText(getString(R.string.save_found_matching_note));
                 editNotify.show();
                 return;
             }
@@ -180,18 +180,18 @@ public class NotesEditor extends AppCompatActivity {
 
     private boolean checkIfFieldsEmpty () {
         if (noteTitle.equals("") && noteContent.equals("")) {
-            editNotify.setText("Title & Content cannot be empty!");
+            editNotify.setText(getString(R.string.error_title_and_content_empty));
             editNotify.show();
             return true;
         } else {
             if (noteTitle.equals("")) {
-                editNotify.setText("Title cannot be empty!");
+                editNotify.setText(getString(R.string.error_title_empty));
                 editNotify.show();
                 return true;
             }
 
             if (noteContent.equals("")) {
-                editNotify.setText("Content cannot be empty!");
+                editNotify.setText(getString(R.string.error_content_empty));
                 editNotify.show();
                 return true;
             }

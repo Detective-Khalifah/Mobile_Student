@@ -29,6 +29,11 @@
     <!-- Note Editor input labels -->
     <string name="note_content_editor_label">Content</string>
     <string name="note_title_editor_label">Title</string>
+    <string name="update_found_matching_note">No changes were made!</string>
+    <string name="save_found_matching_note">Note already exists!</string>
+    <string name="error_title_and_content_empty"><![CDATA[Title & Content cannot be empty!]]></string>
+    <string name="error_title_empty">Title cannot be empty!</string>
+    <string name="error_content_empty">Content cannot be empty!</string>
 
     <!-- Calculator signs, symbols & special keys -->
     <string name="left_parenthesis">(</string>
