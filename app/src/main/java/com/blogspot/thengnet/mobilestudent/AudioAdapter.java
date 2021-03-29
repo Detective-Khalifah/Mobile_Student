@@ -2,11 +2,14 @@ package com.blogspot.thengnet.mobilestudent;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
@@ -33,6 +36,15 @@ public class AudioAdapter extends CursorAdapter {
 
         TextView tvLength = (TextView) view.findViewById(R.id.tv_media_length);
         tvLength.setText(timeConverter(cursor.getString(lengthIndex)));
+
+        ImageView imgThumbnail = (ImageView) view.findViewById(R.id.img_media_thumbnail);
+        Bitmap thumbnail = MediaStore.Video.Thumbnails.getThumbnail(
+                view.getContext().getContentResolver(),
+                Long.parseLong(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID))),
+                MediaStore.Video.Thumbnails.MICRO_KIND, null);
+        if (thumbnail != null)
+            imgThumbnail.setImageBitmap(thumbnail);
+        Log.v(AudioAdapter.class.getName(), "thumbnail not null!");
     }
 
     private String timeConverter (String milliseconds) {
