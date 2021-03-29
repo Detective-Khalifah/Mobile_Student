@@ -24,7 +24,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private ImageView imgPlay, imgPrev, imgNext;
     private TextView tvTrackTitle;
 
-    private static AudioFragment audioFrag = new AudioFragment();
+    private static AudioFragment audioFrag;
 
     public MediaControlsFragment () {
         // Required empty public constructor
@@ -56,6 +56,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
             trackTitle = getArguments().getString(TRACK_TITLE_KEY);
             trackDuration = getArguments().getLong(TRACK_DURATION_KEY);
         }
+        audioFrag = (AudioFragment) getParentFragment();
     }
 
     @Override
