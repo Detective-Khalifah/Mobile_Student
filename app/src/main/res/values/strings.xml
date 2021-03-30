@@ -61,4 +61,6 @@
     <string name="external_storage_permission_reason">This component of the app requires that you allow access to your device\'s storage to fetch media data.</string>
     <string name="external_storage_permission_q">Allow Access</string>
 
+    <string name="media_thumbnail_description">A media file\'s thumbnail</string>
+
 </resources>
