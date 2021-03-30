@@ -21,8 +21,8 @@ public class SimpleCalculatorFragment extends Fragment {
     private static final String LOG_TAG = SimpleCalculatorFragment.class.getName();
     private static StringBuilder expression = new StringBuilder();
     private static int[] buttonsArr = {
-            R.id.bt_one, R.id.bt_two, R.id.bt_three, R.id.bt_four, R.id.bt_five, R.id.bt_six,
-            R.id.bt_seven, R.id.bt_eight, R.id.bt_nine, R.id.bt_lePar, R.id.bt_rePar,
+            R.id.bt_zero, R.id.bt_one, R.id.bt_two, R.id.bt_three, R.id.bt_four, R.id.bt_five,
+            R.id.bt_six, R.id.bt_seven, R.id.bt_eight, R.id.bt_nine, R.id.bt_lePar, R.id.bt_rePar,
             R.id.bt_minus, R.id.bt_plus, R.id.bt_plus_minus, R.id.bt_division, R.id.bt_multiplication,
             R.id.bt_equal, R.id.bt_decimal
     };
