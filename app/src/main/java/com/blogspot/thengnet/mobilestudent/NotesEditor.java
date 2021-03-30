@@ -21,8 +21,7 @@ public class NotesEditor extends AppCompatActivity {
     private static String noteTitle, noteContent, previousTitle, previousContent;
     private static Uri mNoteUri;
 
-    private Snackbar editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "",
-            Snackbar.LENGTH_SHORT);
+    private Snackbar editNotify;
     private TextInputEditText editTitle, editContent;
 
     @Override
@@ -32,6 +31,8 @@ public class NotesEditor extends AppCompatActivity {
 
         editTitle = (TextInputEditText) findViewById(R.id.edit_note_title);
         editContent = (TextInputEditText) findViewById(R.id.edit_note_content);
+        editNotify = Snackbar.make(findViewById(R.id.editor_snackbar_frame), "",
+                Snackbar.LENGTH_SHORT);
 
         Intent currentNote = getIntent();
         mNoteUri = currentNote.getData();
