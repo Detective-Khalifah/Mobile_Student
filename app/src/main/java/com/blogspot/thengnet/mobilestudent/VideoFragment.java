@@ -18,7 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import java.util.ArrayList;
 
@@ -83,10 +83,10 @@ public class VideoFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onViewCreated(view, savedInstanceState);
 
         // Set the {@link audioAdapter} ArrayAdapter on the ListView
-        ListView lvAudio = (ListView) view.findViewById(R.id.lv_video);
-        lvAudio.setAdapter(videoAdapter);
+        GridView gvAudio = (GridView) view.findViewById(R.id.gv_video);
+        gvAudio.setAdapter(videoAdapter);
 
-        lvAudio.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gvAudio.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
                 Intent vid = new Intent(getContext(), VideoActivity.class);
