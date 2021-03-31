@@ -343,9 +343,10 @@ public class SimpleCalculatorFragment extends Fragment {
 
     }
 
-    // TODO: Re-factor this method into 2 later -- one to display expression at touch of any button,
-    //  another to evaluate and display result only when "=" sign is clicked [PRODUCTION (RC-01)-LEVEL]
-
+    /**
+     * Utility method that displays the expression's current state in the #tvExpression
+     * {@link TextView}
+     */
     private void displayExpression () {
         if (expression != null)
             tvExpression.setText(expression);
@@ -377,11 +378,9 @@ public class SimpleCalculatorFragment extends Fragment {
             if (evalResult.substring(evalResult.length() - 2, evalResult.length()).equals(".0"))
                 evalResult = evalResult.substring(0, evalResult.length() - 2);
 
-//            tvExpression.setText(expression);
             tvResult.setText(evalResult);
         } catch (ScriptException se) {
-            // TODO: Remove in [PRODUCTION (RC-01)-LEVEL], replace with user-friendly message
-            tvExpression.setText(se.getLocalizedMessage());
+            tvResult.setText(getString(R.string.warning_syntax_error));
         }
 
     }
