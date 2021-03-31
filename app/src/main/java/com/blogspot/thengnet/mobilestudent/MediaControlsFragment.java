@@ -12,7 +12,8 @@ import android.widget.TextView;
  * A simple {@link Fragment} subclass.
  * Use the empty constructor to create an instance of this fragment.
  */
-public class MediaControlsFragment extends Fragment implements View.OnClickListener {
+public class MediaControlsFragment extends Fragment implements View.OnClickListener,
+        View.OnLongClickListener {
 
     // track controller initialiser keys
     private static final String TRACK_TITLE_KEY = "track_title";
@@ -78,10 +79,15 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
         imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
 
-        // attach event-handler -- #View.OnClickListener
+        // attach event-handler - #View.OnClickListener - to the controllers.
         imgPlay.setOnClickListener(this);
         imgPrev.setOnClickListener(this);
         imgNext.setOnClickListener(this);
+
+        // attach event-handler - #View.OnClickListener - to the controllers.
+        imgPlay.setOnLongClickListener(this);
+        imgPrev.setOnLongClickListener(this);
+        imgNext.setOnLongClickListener(this);
     }
 
     @Override
@@ -96,6 +102,22 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
                 break;
             default:
         }
+    }
+
+    @Override
+    public boolean onLongClick (View v) {
+        switch (v.getId()) {
+            case R.id.btn_play_pause:
+                audioFrag.stopPlayback();
+                return true;
+            case R.id.btn_prev_track:
+
+            case R.id.btn_next_track:
+
+
+            default:
+        }
+        return false;
     }
 
     protected void setAudioMetrics (String title, long position) {
