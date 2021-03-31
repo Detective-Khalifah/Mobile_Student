@@ -95,10 +95,12 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_play_pause:
                 pausePlayBack();
+                break;
             case R.id.btn_prev_track:
                 audioFrag.rewind();
+                break;
             case R.id.btn_next_track:
-                audioFrag.fastForward();
+                audioFrag.nextTrack();
                 break;
             default:
         }

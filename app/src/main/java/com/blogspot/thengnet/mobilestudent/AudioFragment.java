@@ -198,17 +198,6 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                 stopPlayback();
                 break;
         }
-
-
-        // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
-        //  audio item to the object
-        controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
-                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                Long.parseLong(mAudioCursor.getString(
-                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
-
-        // show the {@link MediaControlsFragment} Fragment
-        showControlsFragment();
     }
 
     public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
@@ -254,6 +243,17 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             channel.show(controlsFragment);
         else
             channel.add(R.id.controls_container, controlsFragment);
+
+        channel.commit();
+    }
+
+    /**
+     * Utility method to remove the {@link MediaControlsFragment} child fragment.
+     */
+    private void hideControlsFragment () {
+        channel = childrenManager.beginTransaction();
+        channel.remove(controlsFragment);
+        controlsFragment = null;
 
         channel.commit();
     }
@@ -319,15 +319,29 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     /**
-     * Start playback of the #mAudioPlayer object
-     *
-     * @return true when mAudioPlayer has been initialised -- left the Idle State prior
-     * otherwise false.
+     * Utility method to start playback of the #mAudioPlayer object, if one exits (non-null)
+     * If #controlsFragment is not null, call #hideControlsFragment to remove it, then create a new
+     * instance and start playing.
      */
     protected void playAudioFile () {
-        if (mAudioPlayer != null)
+        if (mAudioPlayer != null) {
+
+            if (controlsFragment != null)
+                hideControlsFragment();
+
+            // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
+            //  audio item to the object
+            controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
+                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                    Long.parseLong(mAudioCursor.getString(
+                            mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+
+            // show the {@link MediaControlsFragment} Fragment
+            showControlsFragment();
+
             // start playing the audio file
             mAudioPlayer.start();
+        }
     }
 
     /**
@@ -363,6 +377,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mAudioPlayer = null;
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
+        // TODO: Consider calling #hideControlsFragment here.
         if (this.isVisible())
             getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
@@ -376,6 +391,27 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     protected void rewind () {
         if (isPlaying()) {
             mAudioPlayer.seekTo(mAudioPlayer.getCurrentPosition() - 10000);
+        }
+    }
+
+    protected void nextTrack () {
+        if (mAudioPlayer != null) {
+
+            // Move to next audio file in generated cursor/table.
+            mAudioCursor.moveToNext();
+
+            // Set #mCurrentAudioUri to the current row of #mAudioCursor
+            mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
+                    ContentUris.parseId(Uri.parse(mAudioCursor.getString(
+                            mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                            )
+                    )
+            );
+
+            // Re-initialise the {@link MediaPlayer} object #mAudioPlayer, and start playing next
+            // audio file/track.
+            initialisePlayer();
+            playAudioFile();
         }
     }
 }
