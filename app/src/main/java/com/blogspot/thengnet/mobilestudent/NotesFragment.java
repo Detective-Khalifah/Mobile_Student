@@ -84,7 +84,7 @@ public class NotesFragment extends Fragment implements LoaderManager.LoaderCallb
                 startActivity(new Intent(getContext(), NotesEditor.class)
                         .setData(ContentUris.withAppendedId(
                                 NoteContract.NoteEntry.CONTENT_URI, id)));
-                return false;
+                return true;
             }
         });
 
