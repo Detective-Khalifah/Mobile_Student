@@ -69,6 +69,8 @@ public class SimpleCalculatorFragment extends Fragment {
         }
 
         btnDelete = (Button) view.findViewById(R.id.bt_del);
+
+        // Event handlers for "DEL" button
         btnDelete.setOnClickListener(new View.OnClickListener() {
             /**
              * Delete character at last position of expression, if expression not empty
@@ -79,8 +81,8 @@ public class SimpleCalculatorFragment extends Fragment {
             public void onClick (View v) {
                 if (String.valueOf(expression).equals("") || expression == null)
                     return;
-                expression.deleteCharAt(expression.length() - 1); // delete last character
-                displayResult(); // show expression & result after deleting last character
+                expression.deleteCharAt(expression.length() - 1); // delete character at last index
+                displayExpression(); // show expression after deleting character at last index
             }
         });
         btnDelete.setOnLongClickListener(new View.OnLongClickListener() {
@@ -94,6 +96,7 @@ public class SimpleCalculatorFragment extends Fragment {
             public boolean onLongClick (View v) {
                 if (!String.valueOf(expression).equals("") || expression != null)
                     expression = null;
+                displayExpression();
                 displayResult();
                 return false;
             }
@@ -101,9 +104,11 @@ public class SimpleCalculatorFragment extends Fragment {
 
         if (savedInstanceState != null) {
             expression = new StringBuilder(savedInstanceState.getString("expression_string"));
+            displayExpression();
+            displayResult();
         }
 
-        displayResult();
+        displayExpression();
     }
 
     /**
@@ -201,7 +206,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 if (eq.contains("."))
                     expression.deleteCharAt(expression.indexOf("."));
                 expression.append('.');
-                displayResult();
+                displayExpression();
                 break;
             case "divi":
                 if (eq.endsWith("/"))
@@ -210,7 +215,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "/");
                 else
                     expression.append("/");
-                tvExpression.setText(expression);
+                displayExpression();
                 break;
             case "minus":
                 if (eq.endsWith("-"))
@@ -219,7 +224,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "-");
                 else
                     expression.append('-');
-                tvExpression.setText(expression);
+                displayExpression();
                 break;
             case "multi":
                 if (eq.endsWith("*"))
@@ -228,7 +233,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression.replace(lastPosition, expression.length(), "*");
                 else
                     expression.append("*");
-                tvExpression.setText(expression);
+                displayExpression();
                 break;
             case "plus":
                 if (eq.endsWith("+")) {
@@ -238,7 +243,7 @@ public class SimpleCalculatorFragment extends Fragment {
                 else {
                     expression.append("+");
                 }
-                tvExpression.setText(expression);
+                displayExpression();
                 break;
             case "plusMinus":
                 // If expression is empty, simply skip using plus-minus sign the process of finding
@@ -278,7 +283,7 @@ public class SimpleCalculatorFragment extends Fragment {
                     expression = new StringBuilder("-").append(eq);
                 }
 
-                displayResult();
+                displayExpression();
                 break;
             case "equals?":
                 if (eq.endsWith("*") || eq.endsWith("+") || eq.endsWith("-") || eq.endsWith("/"))
@@ -288,9 +293,11 @@ public class SimpleCalculatorFragment extends Fragment {
             // TODO: Add logic and layout tricks to handle "dangling parentheses"
             case "(":
                 expression.append("(");
+                displayExpression();
                 break;
             case ")":
                 expression.append(")");
+                displayExpression();
                 break;
             case "0":
                 if (expression != null) {
@@ -299,12 +306,12 @@ public class SimpleCalculatorFragment extends Fragment {
                 } else {
                     expression.append(btn);
                 }
-                displayResult();
+                displayExpression();
                 break;
             default:
                 if (expression != null)
                     expression.append(btn);
-                displayResult();
+                displayExpression();
         }
     }
 
@@ -339,6 +346,11 @@ public class SimpleCalculatorFragment extends Fragment {
     // TODO: Re-factor this method into 2 later -- one to display expression at touch of any button,
     //  another to evaluate and display result only when "=" sign is clicked [PRODUCTION (RC-01)-LEVEL]
 
+    private void displayExpression () {
+        if (expression != null)
+            tvExpression.setText(expression);
+    }
+
     /**
      * This method evaluates the expression on #tvExpression and displays it on #tvResult
      */
@@ -365,7 +377,7 @@ public class SimpleCalculatorFragment extends Fragment {
             if (evalResult.substring(evalResult.length() - 2, evalResult.length()).equals(".0"))
                 evalResult = evalResult.substring(0, evalResult.length() - 2);
 
-            tvExpression.setText(expression);
+//            tvExpression.setText(expression);
             tvResult.setText(evalResult);
         } catch (ScriptException se) {
             // TODO: Remove in [PRODUCTION (RC-01)-LEVEL], replace with user-friendly message
