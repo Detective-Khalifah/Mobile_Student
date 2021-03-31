@@ -306,11 +306,13 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             public boolean onError (MediaPlayer mp, int what, int extra) {
                 if (mp != null) {
                     stopPlayback();
-//                    mp.reset();
+
                     // Successfully handled error
                     return true;
                 }
+
                 // Unsuccessfully handled error
+                mp.reset();
                 return false;
             }
         });
@@ -358,6 +360,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     protected void stopPlayback () {
         if (mAudioPlayer != null) {
             mAudioPlayer.release();
+            mAudioPlayer = null;
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
         if (this.isVisible())
