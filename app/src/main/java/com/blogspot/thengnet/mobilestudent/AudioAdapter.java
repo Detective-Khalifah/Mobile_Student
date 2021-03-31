@@ -1,18 +1,12 @@
 package com.blogspot.thengnet.mobilestudent;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
@@ -39,25 +33,6 @@ public class AudioAdapter extends CursorAdapter {
 
         TextView tvLength = (TextView) view.findViewById(R.id.tv_media_length);
         tvLength.setText(timeConverter(cursor.getString(lengthIndex)));
-
-        ImageView imgThumbnail = (ImageView) view.findViewById(R.id.img_media_thumbnail);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 1;
-        try {
-            // get thumbnail of video files
-            Bitmap thumbnail = MediaStore.Video.Thumbnails.getThumbnail(
-                    context.getContentResolver(),
-                    ContentUris.parseId(Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID)))),
-                    MediaStore.Video.Thumbnails.MINI_KIND, options);
-
-            // set the thumbnail on {@link ImageView} if one exists, otherwise use placeholder.
-            if (thumbnail != null) {
-                Log.v(AudioAdapter.class.getName(), "thumbnail not null!");
-                imgThumbnail.setImageBitmap(thumbnail);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
