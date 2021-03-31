@@ -1,10 +1,12 @@
 package com.blogspot.thengnet.mobilestudent;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +24,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private static String trackTitle;
     private static long trackDuration;
 
-    private ImageView imgPlay, imgPrev, imgNext, imgRewind, imgFastForward;
+    private Button imgPlay, imgPrev, imgNext, imgRewind, imgFastForward;
     private TextView tvTrackTitle;
 
     private static AudioFragment audioFrag;
@@ -75,11 +77,11 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         tvTrackTitle.setText(trackTitle);
 
         // ImageView lookup
-        imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
-        imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
-        imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
-        imgRewind = (ImageView) view.findViewById(R.id.btn_rewind);
-        imgFastForward = (ImageView) view.findViewById(R.id.btn_fastForward);
+        imgPlay = (Button) view.findViewById(R.id.btn_play_pause);
+        imgPrev = (Button) view.findViewById(R.id.btn_prev_track);
+        imgNext = (Button) view.findViewById(R.id.btn_next_track);
+        imgRewind = (Button) view.findViewById(R.id.btn_rewind);
+        imgFastForward = (Button) view.findViewById(R.id.btn_fastForward);
 
         // attach event-handler - #View.OnClickListener - to the controllers.
         imgPlay.setOnClickListener(this);
@@ -108,6 +110,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.btn_rewind:
                 audioFrag.rewind();
+                break;
             case R.id.btn_fastForward:
                 audioFrag.fastForward();
             default:
@@ -140,10 +143,14 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private void pausePlayBack () {
         if (audioFrag.isPlaying()) {
             audioFrag.pausePlayback();
-            imgPlay.setImageResource(R.drawable.baseline_play_arrow_black_48);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                imgPlay.setBackground(getActivity().getDrawable(R.drawable.baseline_play_arrow_black_48));
+            }
         } else {
             audioFrag.playAudioFile();
-            imgPlay.setImageResource(R.drawable.baseline_pause_black_48);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                imgPlay.setBackground(getActivity().getDrawable(R.drawable.baseline_pause_black_48));
+            }
         }
     }
 
