@@ -22,7 +22,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private static String trackTitle;
     private static long trackDuration;
 
-    private ImageView imgPlay, imgPrev, imgNext;
+    private ImageView imgPlay, imgPrev, imgNext, imgRewind, imgFastForward;
     private TextView tvTrackTitle;
 
     private static AudioFragment audioFrag;
@@ -78,11 +78,15 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
         imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
         imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
+        imgRewind = (ImageView) view.findViewById(R.id.btn_rewind);
+        imgFastForward = (ImageView) view.findViewById(R.id.btn_fastForward);
 
         // attach event-handler - #View.OnClickListener - to the controllers.
         imgPlay.setOnClickListener(this);
         imgPrev.setOnClickListener(this);
         imgNext.setOnClickListener(this);
+        imgRewind.setOnClickListener(this);
+        imgFastForward.setOnClickListener(this);
 
         // attach event-handler - #View.OnClickListener - to the controllers.
         imgPlay.setOnLongClickListener(this);
@@ -97,11 +101,15 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
                 pausePlayBack();
                 break;
             case R.id.btn_prev_track:
-                audioFrag.rewind();
+                audioFrag.previousTrack();
                 break;
             case R.id.btn_next_track:
                 audioFrag.nextTrack();
                 break;
+            case R.id.btn_rewind:
+                audioFrag.rewind();
+            case R.id.btn_fastForward:
+                audioFrag.fastForward();
             default:
         }
     }
