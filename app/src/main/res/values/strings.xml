@@ -9,6 +9,10 @@
     <string name="note_viewer_label">Note Viewer</string>
     <string name="note_editor_label">Note Editor</string>
 
+    <!-- Permission status text -->
+    <string name="external_storage_permission_reason">This component of the app requires that you allow access to your device\'s storage to fetch media data.</string>
+    <string name="external_storage_permission_q">Allow Access</string>
+
     <!-- Menu item labels -->
     <string name="menu_save">Save</string>
     <string name="menu_edit">Edit</string>
@@ -47,6 +51,8 @@
     <string name="equality_sign">=</string>
     <string name="del">Del</string>
 
+    <string name="warning_syntax_error">Syntax Error!</string>
+
     <!-- Calculator numerical keys -->
     <string name="number_zero">0</string>
     <string name="number_one">1</string>
@@ -58,8 +64,6 @@
     <string name="number_seven">7</string>
     <string name="number_eight">8</string>
     <string name="number_nine">9</string>
-    <string name="external_storage_permission_reason">This component of the app requires that you allow access to your device\'s storage to fetch media data.</string>
-    <string name="external_storage_permission_q">Allow Access</string>
 
     <string name="media_thumbnail_description">A media file\'s thumbnail</string>
 
