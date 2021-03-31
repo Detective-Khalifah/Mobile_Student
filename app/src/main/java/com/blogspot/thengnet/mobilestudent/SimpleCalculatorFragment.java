@@ -292,6 +292,15 @@ public class SimpleCalculatorFragment extends Fragment {
             case ")":
                 expression.append(")");
                 break;
+            case "0":
+                if (expression != null) {
+                    if (!(expression.length() == 1 && expression.charAt(0) == '0'))
+                        expression.append(btn);
+                } else {
+                    expression.append(btn);
+                }
+                displayResult();
+                break;
             default:
                 if (expression != null)
                     expression.append(btn);
