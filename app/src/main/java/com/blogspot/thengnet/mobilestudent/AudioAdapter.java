@@ -1,8 +1,11 @@
 package com.blogspot.thengnet.mobilestudent;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
@@ -38,15 +41,31 @@ public class AudioAdapter extends CursorAdapter {
         tvLength.setText(timeConverter(cursor.getString(lengthIndex)));
 
         ImageView imgThumbnail = (ImageView) view.findViewById(R.id.img_media_thumbnail);
-        Bitmap thumbnail = MediaStore.Video.Thumbnails.getThumbnail(
-                view.getContext().getContentResolver(),
-                Long.parseLong(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID))),
-                MediaStore.Video.Thumbnails.MICRO_KIND, null);
-        if (thumbnail != null)
-            imgThumbnail.setImageBitmap(thumbnail);
-        Log.v(AudioAdapter.class.getName(), "thumbnail not null!");
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 1;
+        try {
+            // get thumbnail of video files
+            Bitmap thumbnail = MediaStore.Video.Thumbnails.getThumbnail(
+                    context.getContentResolver(),
+                    ContentUris.parseId(Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID)))),
+                    MediaStore.Video.Thumbnails.MINI_KIND, options);
+
+            // set the thumbnail on {@link ImageView} if one exists, otherwise use placeholder.
+            if (thumbnail != null) {
+                Log.v(AudioAdapter.class.getName(), "thumbnail not null!");
+                imgThumbnail.setImageBitmap(thumbnail);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Utility method to convert time from source type
+     *
+     * @param milliseconds fetched time in same unit
+     * @return converted time in seconds, minutes and hours.
+     */
     private String timeConverter (String milliseconds) {
         long hour, minute, second, millisecond;
         millisecond = Long.parseLong(milliseconds);
