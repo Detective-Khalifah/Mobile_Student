@@ -63,25 +63,21 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onResume () {
         super.onResume();
         getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        if (mAudioPlayer != null && mCurrentAudioUri != null && controlsFragment != null) {
+            Log.v(LOG_TAG, "onResume found not null");
+            showControlsFragment();
+        }
     }
 
     @Override
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAudioPlayer != null) {
+        if (mCurrentAudioUri != null) {
             outState.putString("previous-playback-audio", String.valueOf(mCurrentAudioUri));
         }
     }
 
-    /**
-     * Call #stopPlayback if screen is covered by components like another Activity.
-     */
     // TODO: Find a way to keep playback data and continue playback when blocker is away!
-    @Override
-    public void onPause () {
-        super.onPause();
-        stopPlayback();
-    }
 
     @Override
     public void onCreate (Bundle savedInstanceState) {
@@ -97,9 +93,18 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             mCurrentAudioUri = Uri.parse(
                     savedInstanceState.getString(
                             "previous-playback-audio", String.valueOf(mCurrentAudioUri)));
-            mAudioPlayer.reset();
-        }
-        initialisePlayer();
+
+            // If an audio file wasn't playing, reset {@link MediaPlayer} object, nullify and
+            // initialise, otherwise continue playing.
+            if (mCurrentAudioUri == null) {
+//                mAudioPlayer.reset();
+                mAudioPlayer = null;
+                initialisePlayer();
+            } else {
+                playAudioFile();
+            }
+        } else
+            Log.v(LOG_TAG, "wasn't playing");
 
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
     }
@@ -167,6 +172,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
                         // Focus gain, with expectation of releasing focus momentarily, disabling all other playback (system & app)
                     case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
                         // do not play -- abandon audio focus
+                        Log.v(LOG_TAG, "FOCUS LOSS");
                         stopPlayback();
                         break;
                     default:
@@ -244,14 +250,16 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      * Show the {@link MediaControlsFragment} child fragment when an audio file is played
      */
     private void showControlsFragment () {
-        childrenManager = getChildFragmentManager();
-        channel = childrenManager.beginTransaction();
-        if (controlsFragment.isAdded())
-            channel.show(controlsFragment);
-        else
-            channel.add(R.id.controls_container, controlsFragment);
+        if (this.isResumed()) {
+            childrenManager = getChildFragmentManager();
+            channel = childrenManager.beginTransaction();
+            if (controlsFragment.isAdded())
+                channel.show(controlsFragment);
+            else
+                channel.add(R.id.controls_container, controlsFragment);
 
-        channel.commit();
+            channel.commit();
+        }
     }
 
     /**
@@ -262,7 +270,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         channel.remove(controlsFragment);
         controlsFragment = null;
 
-        channel.commit();
+        if (this.isVisible())
+            channel.commit();
     }
     // TODO: Implement LiveData + ViewModel - to handle click events on the
     //  child fragment's views.
@@ -273,6 +282,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     protected void initialisePlayer () {
         if (mAudioPlayer != null) {
+            Log.v(LOG_TAG, "init not null");
             // reset the {@link MediaPlayer} object
             mAudioPlayer.reset();
             try {
@@ -286,7 +296,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             }
             return;
         }
-
+        Log.v(LOG_TAG, "init null");
         // instantiate the {@link mAudioPlayer} object
         mAudioPlayer = new MediaPlayer();
 
@@ -304,6 +314,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
                 // release resources, hide {@link MediaControlsFragment} if this {@link Fragment}
                 // is in the #onResumed state.
+                Log.v(LOG_TAG, "onCompletion.");
                 stopPlayback();
             }
         });
@@ -312,7 +323,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
             @Override
             public boolean onError (MediaPlayer mp, int what, int extra) {
                 if (mp != null) {
-                    stopPlayback();
+                    Log.v(LOG_TAG, "onError");
+                    mp.reset();
+                    hideControlsFragment();
 
                     // Successfully handled error
                     return true;
@@ -333,19 +346,22 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     protected void playAudioFile () {
         if (mAudioPlayer != null) {
 
-            if (controlsFragment != null)
-                hideControlsFragment();
+            if (controlsFragment != null) {
+                if (mCurrentAudioUri != null) {
+                    showControlsFragment();
+                } else
+                    hideControlsFragment();
+            } else {
+                // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
+                //  audio item to the object
+                controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
+                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                        Long.parseLong(mAudioCursor.getString(
+                                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
 
-            // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
-            //  audio item to the object
-            controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
-                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    Long.parseLong(mAudioCursor.getString(
-                            mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
-
-            // show the {@link MediaControlsFragment} Fragment
-            showControlsFragment();
-
+                // show the {@link MediaControlsFragment} Fragment
+                showControlsFragment();
+            }
             // start playing the audio file
             mAudioPlayer.start();
         }
@@ -380,12 +396,14 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     protected void stopPlayback () {
         if (mAudioPlayer != null) {
+            Log.v(LOG_TAG, "Not NULL!");
+            mAudioPlayer.reset();
             mAudioPlayer.release();
             mAudioPlayer = null;
             audioPlayManager.abandonAudioFocus(audioFocus);
         }
         // TODO: Consider calling #hideControlsFragment here.
-        if (this.isVisible())
+        if (this.isVisible() && this.isResumed() /*isVisible() wasn't enough during testing*/ && controlsFragment != null)
             getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
     }
 
