@@ -93,6 +93,12 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         // to parse the {@link Audio} list item views
         audioAdapter = new AudioAdapter(getContext(), null);
 
+        if (savedInstanceState != null) {
+            mCurrentAudioUri = Uri.parse(
+                    savedInstanceState.getString(
+                            "previous-playback-audio", String.valueOf(mCurrentAudioUri)));
+            mAudioPlayer.reset();
+        }
         initialisePlayer();
 
         getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
