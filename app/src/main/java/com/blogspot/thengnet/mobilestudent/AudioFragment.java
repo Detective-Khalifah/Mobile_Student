@@ -3,6 +3,7 @@ package com.blogspot.thengnet.mobilestudent;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -394,19 +395,56 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         }
     }
 
+    protected void previousTrack () {
+        if (mAudioPlayer != null) {
+
+            try {
+                // Move to previous audio file in generated cursor/table, if there's one before
+                // current file/track.
+                boolean previousExists = mAudioCursor.moveToPrevious();
+
+                if (previousExists) {
+                    // Set #mCurrentAudioUri to the current row of #mAudioCursor
+                    mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
+                            ContentUris.parseId(Uri.parse(mAudioCursor.getString(
+                                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                                    )
+                            )
+                    );
+                } else // Otherwise return to track originally being played.
+                    mAudioCursor.moveToNext();
+            } catch (CursorIndexOutOfBoundsException cursorException) {
+                // TODO: Display a Toast/Snackbar if there's such error.
+            }
+
+            // Re-initialise the {@link MediaPlayer} object #mAudioPlayer, and start playing previous
+            // audio file/track.
+            initialisePlayer();
+            playAudioFile();
+        }
+    }
+
     protected void nextTrack () {
         if (mAudioPlayer != null) {
 
-            // Move to next audio file in generated cursor/table.
-            mAudioCursor.moveToNext();
+            try {
+                // Move to next audio file in generated cursor/table, if there's one after current
+                // file/track.
+                boolean nextExists = mAudioCursor.moveToNext();
 
-            // Set #mCurrentAudioUri to the current row of #mAudioCursor
-            mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
-                    ContentUris.parseId(Uri.parse(mAudioCursor.getString(
-                            mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                if (nextExists) {
+                    // Set #mCurrentAudioUri to the current row of #mAudioCursor
+                    mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
+                            ContentUris.parseId(Uri.parse(mAudioCursor.getString(
+                                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                                    )
                             )
-                    )
-            );
+                    );
+                } else // Otherwise return to track originally being played.
+                    mAudioCursor.moveToPrevious();
+            } catch (CursorIndexOutOfBoundsException cursorException) {
+                // TODO: Display a Toast/Snackbar if there's such error.
+            }
 
             // Re-initialise the {@link MediaPlayer} object #mAudioPlayer, and start playing next
             // audio file/track.
