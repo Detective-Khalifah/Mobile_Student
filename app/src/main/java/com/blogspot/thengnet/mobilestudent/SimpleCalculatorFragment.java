@@ -379,6 +379,9 @@ public class SimpleCalculatorFragment extends Fragment {
                 evalResult = evalResult.substring(0, evalResult.length() - 2);
 
             tvResult.setText(evalResult);
+
+            // reset #expression to the calculated#evalResult, so further calculation can be made using it.
+            expression = new StringBuilder(evalResult);
         } catch (ScriptException se) {
             tvResult.setText(getString(R.string.warning_syntax_error));
         }
