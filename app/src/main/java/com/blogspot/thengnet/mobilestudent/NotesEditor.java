@@ -49,12 +49,13 @@ public class NotesEditor extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_save:
                 if (mNoteUri != null) {
-                    updateNote();
-                    finish();
+                    if (updateNote())
+                        finish();
                     break;
                 }
-                saveNote();
-                finish();
+
+                if (saveNote())
+                    finish();
                 break;
             case android.R.id.home:
                 finish();
@@ -109,18 +110,18 @@ public class NotesEditor extends AppCompatActivity {
         }
     }
 
-    private void updateNote () {
+    private boolean updateNote () {
         noteTitle = editTitle.getText().toString().trim();
         noteContent = editContent.getText().toString().trim();
 
         // Ascertain changes were made to the notes's title or content
-        if (noteTitle.equalsIgnoreCase(previousTitle) || noteContent.equalsIgnoreCase(previousContent)) {
+        if (noteTitle.equals(previousTitle) && noteContent.equals(previousContent)) {
             editNotify.setText(getString(R.string.update_found_matching_note));
             editNotify.show();
-            return;
+            return false;
         }
 
-        if (checkIfFieldsEmpty()) return;
+        if (checkIfFieldsEmpty()) return false;
 
         ContentValues updateValues = new ContentValues();
         updateValues.put(NoteContract.NoteEntry.COLUMN_NOTE_TITLE, noteTitle);
@@ -131,20 +132,23 @@ public class NotesEditor extends AppCompatActivity {
                 .update(mNoteUri, updateValues, null, null);
         if (notesUpdated == 1) {
             editNotify.setText(getString(R.string.note_editor_successful_update));
+            editNotify.show();
+            return true;
         } else {
             editNotify.setText(getString(R.string.note_editor_unsuccessful_update));
+            editNotify.show();
+            return false;
         }
-        editNotify.show();
     }
 
-    private void saveNote () {
+    private boolean saveNote () {
         noteTitle = editTitle.getText().toString().trim();
         noteContent = editContent.getText().toString();
         String[] matchArgs = new String[]{noteTitle, noteContent};
 
         Cursor matchFound = null;
 
-        if (checkIfFieldsEmpty()) return;
+        if (checkIfFieldsEmpty()) return false;
 
         try {
             matchFound = getContentResolver().query(NoteContract.NoteEntry.CONTENT_URI, null,
@@ -155,7 +159,7 @@ public class NotesEditor extends AppCompatActivity {
             if (matchFound != null && matchFound.getCount() > 0) {
                 editNotify.setText(getString(R.string.save_found_matching_note));
                 editNotify.show();
-                return;
+                return false;
             }
         } catch (NullPointerException npe) {
             npe.getMessage();
@@ -172,10 +176,13 @@ public class NotesEditor extends AppCompatActivity {
         Uri ins = getContentResolver().insert(NoteContract.NoteEntry.CONTENT_URI, values);
         if (ins != null) {
             editNotify.setText(getString(R.string.note_editor_successful_save));
+            editNotify.show();
+            return true;
         } else {
             editNotify.setText(getString(R.string.note_editor_unsuccessful_save));
+            editNotify.show();
+            return false;
         }
-        editNotify.show();
 
     }
 
