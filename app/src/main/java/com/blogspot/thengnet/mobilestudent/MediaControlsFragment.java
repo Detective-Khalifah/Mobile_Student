@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blogspot.thengnet.mobilestudent.data.TimeConverter;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the empty constructor to create an instance of this fragment.
@@ -23,7 +25,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
     private static long trackDuration;
 
     private ImageView imgPlay, imgPrev, imgNext, imgRewind, imgFastForward;
-    private TextView tvTrackTitle;
+    private TextView tvTrackTitle, tvTrackDuration;
 
     private static AudioFragment audioFrag;
 
@@ -73,6 +75,9 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
 
         tvTrackTitle = (TextView) view.findViewById(R.id.tv_track_title);
         tvTrackTitle.setText(trackTitle);
+
+        tvTrackDuration = (TextView) view.findViewById(R.id.tv_media_length);
+        tvTrackDuration.setText((TimeConverter.convertTime(String.valueOf(trackDuration))));
 
         // ImageView lookup
         imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
@@ -134,10 +139,8 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
 
     protected void setAudioMetrics (String title, long position) {
         // TODO: reset old/new title on TextView and position SeekBar accordingly
+        //  consider Data binding or View binding for the purpose.
     }
-
-    // TODO: Use clickListener & LongClickListener for the "next track" and fast-forward features
-    //  respectively
 
     private void pausePlayBack () {
         if (audioFrag.isPlaying()) {
