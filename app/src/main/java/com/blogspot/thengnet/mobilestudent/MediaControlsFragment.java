@@ -79,7 +79,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         tvTrackDuration = (TextView) view.findViewById(R.id.tv_media_length);
         tvTrackDuration.setText((TimeConverter.convertTime(String.valueOf(trackDuration))));
 
-        // ImageView lookup
+        // {@link ImageView}s lookup
         imgPlay = (ImageView) view.findViewById(R.id.btn_play_pause);
         imgPrev = (ImageView) view.findViewById(R.id.btn_prev_track);
         imgNext = (ImageView) view.findViewById(R.id.btn_next_track);
@@ -93,7 +93,7 @@ public class MediaControlsFragment extends Fragment implements View.OnClickListe
         imgRewind.setOnClickListener(this);
         imgFastForward.setOnClickListener(this);
 
-        // attach event-handler - #View.OnClickListener - to the controllers.
+        // attach event-handler - #View.OnLongClickListener - to the controllers.
         imgPlay.setOnLongClickListener(this);
         imgPrev.setOnLongClickListener(this);
         imgNext.setOnLongClickListener(this);

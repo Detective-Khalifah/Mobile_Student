@@ -21,7 +21,7 @@
 
     <!-- Note Editor status messages -->
     <string name="note_editor_successful_save">Note saved!</string>
-    <string name="note_editor_unsuccessful_save">Note could note be saved…</string>
+    <string name="note_editor_unsuccessful_save">Note could not be saved…</string>
     <string name="note_editor_successful_update">Note updated!</string>
     <string name="note_editor_unsuccessful_update">Note unsuccessfully updated…</string>
 

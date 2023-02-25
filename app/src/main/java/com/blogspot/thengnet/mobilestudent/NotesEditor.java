@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 import com.blogspot.thengnet.mobilestudent.data.NoteContract;
 
@@ -48,6 +50,8 @@ public class NotesEditor extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
+//                InputMethodManager inputMM = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//                inputMM.hideSoftInputFromInputMethod((IBinder) this, 0);
                 if (mNoteUri != null) {
                     if (updateNote())
                         finish();

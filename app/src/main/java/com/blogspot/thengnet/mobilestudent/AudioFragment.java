@@ -25,7 +25,7 @@ import android.widget.ListView;
 import java.io.IOException;
 
 /**
- * A simple {@link Fragment} subclass for audio files.
+ * A simple {@link Fragment} subclass for playing audio files.
  */
 public class AudioFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -39,6 +39,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     private static Context mAppContext;
     private static Cursor mAudioCursor;
     private static MediaPlayer mAudioPlayer;
+    private static int mPosition;
     private AudioAdapter audioAdapter;
     private MediaControlsFragment controlsFragment;
     private FragmentManager childrenManager;
@@ -73,7 +74,8 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mCurrentAudioUri != null) {
-            outState.putString("previous-playback-audio", String.valueOf(mCurrentAudioUri));
+            outState.putString("PREVIOUS-PLAYBACK-FILE", String.valueOf(mCurrentAudioUri));
+            outState.putInt("PREVIOUS-POSITION", mAudioPlayer.getCurrentPosition());
         }
     }
 
@@ -92,16 +94,18 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         if (savedInstanceState != null) {
             mCurrentAudioUri = Uri.parse(
                     savedInstanceState.getString(
-                            "previous-playback-audio", String.valueOf(mCurrentAudioUri)));
+                            "PREVIOUS-PLAYBACK-FILE", String.valueOf(mCurrentAudioUri)));
+            mPosition = savedInstanceState.getInt("PREVIOUS-POSITION");
 
             // If an audio file wasn't playing, reset {@link MediaPlayer} object, nullify and
             // initialise, otherwise continue playing.
-            if (mCurrentAudioUri == null) {
-//                mAudioPlayer.reset();
+            if (mCurrentAudioUri != null && mPosition > 0) {
+                Log.v(LOG_TAG, "mCurrentAudioUri not null in @onCreate");
+                resumePlayback();
+            } else {
+                mAudioPlayer.reset();
                 mAudioPlayer = null;
                 initialisePlayer();
-            } else {
-                playAudioFile();
             }
         } else
             Log.v(LOG_TAG, "wasn't playing");
@@ -231,13 +235,9 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.getCount() > 0) {
-            Log.v(LOG_TAG, "audioCursor not empty!");
             mAudioCursor = cursor;
             audioAdapter.swapCursor(mAudioCursor);
-            return;
         }
-
-        Log.v(LOG_TAG, "audioCursor empty!");
 
     }
 
@@ -322,6 +322,35 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
         mAudioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError (MediaPlayer mp, int what, int extra) {
+
+                switch (what) {
+                    case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                        Log.v(LOG_TAG, "Media Error Unknown");
+                        break;
+                    case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                        Log.v(LOG_TAG, "Media Error Server Died");
+                        break;
+                    default:
+                        Log.v(LOG_TAG, "Media Error what: " + what);
+                }
+
+                switch (extra) {
+                    case MediaPlayer.MEDIA_ERROR_IO:
+                        Log.v(LOG_TAG, "Media Error IO");
+                        break;
+                    case MediaPlayer.MEDIA_ERROR_MALFORMED:
+                        Log.v(LOG_TAG, "Media Error Malformed");
+                        break;
+                    case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                        Log.v(LOG_TAG, "Media Error Unsupported");
+                        break;
+                    case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+                        Log.v(LOG_TAG, "Media Error Timed Out");
+                        break;
+                    default:
+                        Log.v(LOG_TAG, "Media Error extra: " + extra);
+                }
+
                 if (mp != null) {
                     Log.v(LOG_TAG, "onError");
                     mp.reset();
@@ -333,6 +362,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
 
                 // Unsuccessfully handled error
                 mp.reset();
+                Log.v(LOG_TAG, "Error handled unsuccessfully.");
                 return false;
             }
         });
@@ -345,6 +375,7 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     protected void playAudioFile () {
         if (mAudioPlayer != null) {
+            Log.v(LOG_TAG, "mAudioPlayer not null in #playAudioFile.");
 
             if (controlsFragment != null) {
                 if (mCurrentAudioUri != null) {
@@ -387,7 +418,21 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      */
     protected void pausePlayback () {
         if (mAudioPlayer != null) {
+            mPosition = mAudioPlayer.getCurrentPosition();
             mAudioPlayer.pause();
+        }
+    }
+
+    /**
+     * A method to resume playback of the #mAudioPlayer object.
+     */
+    private void resumePlayback () {
+        if (mAudioPlayer != null && mPosition > 0) {
+            mAudioPlayer.seekTo(mPosition);
+            mAudioPlayer.start();
+        } else {
+//            initialisePlayer();
+//            resumePlayback();
         }
     }
 
