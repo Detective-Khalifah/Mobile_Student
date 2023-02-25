@@ -4,8 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
-import android.support.v4.widget.CursorAdapter;
+
+import androidx.annotation.RequiresApi;
+import androidx.cursoradapter.widget.CursorAdapter;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.blogspot.thengnet.mobilestudent.data.TimeConverter;
-
-import java.util.concurrent.TimeUnit;
 
 public class AudioAdapter extends CursorAdapter {
 
