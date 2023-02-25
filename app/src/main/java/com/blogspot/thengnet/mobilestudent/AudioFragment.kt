@@ -1,373 +1,292 @@
-package com.blogspot.thengnet.mobilestudent;
+package com.blogspot.thengnet.mobilestudent
 
-import android.content.ContentUris;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-
-import java.io.IOException;
+import android.content.ContentUris
+import android.content.Context
+import android.database.Cursor
+import android.database.CursorIndexOutOfBoundsException
+import android.media.AudioManager
+import android.media.AudioManager.OnAudioFocusChangeListener
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.ListView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
+import com.blogspot.thengnet.mobilestudent.databinding.FragmentAudioBinding
+import java.io.IOException
 
 /**
- * A simple {@link Fragment} subclass for playing audio files.
+ * A simple [Fragment] subclass for playing audio files.
  */
-public class AudioFragment extends Fragment implements AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+class AudioFragment : Fragment(), OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor?> {
 
-    private static final int AUDIO_LOADER_ID = 3;
-    private static final String LOG_TAG = AudioFragment.class.getName();
+    private var _binding: FragmentAudioBinding? = null
 
-    private static final Uri mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    private static Uri mCurrentAudioUri;
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
-    private static Context mAppContext;
-    private static Cursor mAudioCursor;
-    private static MediaPlayer mAudioPlayer;
-    private static int mPosition;
-    private AudioAdapter audioAdapter;
-    private MediaControlsFragment controlsFragment;
-    private FragmentManager childrenManager;
-    private FragmentTransaction channel;
-
-    private static AudioManager audioPlayManager;
-    private AudioManager.OnAudioFocusChangeListener audioFocus;
-
-    public AudioFragment () {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onAttach (Context context) {
-        super.onAttach(context);
+    private var audioAdapter: AudioAdapter? = null
+    private var controlsFragment: MediaControlsFragment? = null
+    private var childrenManager: FragmentManager? = null
+    private var channel: FragmentTransaction? = null
+    private var audioFocus: OnAudioFocusChangeListener? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
         // context of the app
-        mAppContext = context;
+        mAppContext = context
     }
 
-    @Override
-    public void onResume () {
-        super.onResume();
-        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    override fun onResume() {
+        super.onResume()
+        requireActivity().volumeControlStream = AudioManager.STREAM_MUSIC
         if (mAudioPlayer != null && mCurrentAudioUri != null && controlsFragment != null) {
-            Log.v(LOG_TAG, "onResume found not null");
-            showControlsFragment();
+            Log.v(LOG_TAG, "onResume found not null")
+            showControlsFragment()
         }
     }
 
-    @Override
-    public void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         if (mCurrentAudioUri != null) {
-            outState.putString("PREVIOUS-PLAYBACK-FILE", String.valueOf(mCurrentAudioUri));
-            outState.putInt("PREVIOUS-POSITION", mAudioPlayer.getCurrentPosition());
+            outState.putString("PREVIOUS-PLAYBACK-FILE", mCurrentAudioUri.toString())
+            outState.putInt("PREVIOUS-POSITION", mAudioPlayer!!.currentPosition)
         }
     }
 
     // TODO: Find a way to keep playback data and continue playback when blocker is away!
-
-    @Override
-    public void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        audioPlayManager = (AudioManager) mAppContext.getSystemService(Context.AUDIO_SERVICE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        audioPlayManager = mAppContext!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         // create and initialise the ArrayAdapter<Audio> object
         // to parse the {@link Audio} list item views
-        audioAdapter = new AudioAdapter(getContext(), null);
-
+        audioAdapter = AudioAdapter(context, null)
         if (savedInstanceState != null) {
             mCurrentAudioUri = Uri.parse(
-                    savedInstanceState.getString(
-                            "PREVIOUS-PLAYBACK-FILE", String.valueOf(mCurrentAudioUri)));
-            mPosition = savedInstanceState.getInt("PREVIOUS-POSITION");
+                savedInstanceState.getString(
+                    "PREVIOUS-PLAYBACK-FILE", mCurrentAudioUri.toString()
+                )
+            )
+            mPosition = savedInstanceState.getInt("PREVIOUS-POSITION")
 
             // If an audio file wasn't playing, reset {@link MediaPlayer} object, nullify and
             // initialise, otherwise continue playing.
             if (mCurrentAudioUri != null && mPosition > 0) {
-                Log.v(LOG_TAG, "mCurrentAudioUri not null in @onCreate");
-                resumePlayback();
+                Log.v(LOG_TAG, "mCurrentAudioUri not null in @onCreate")
+                resumePlayback()
             } else {
-                mAudioPlayer.reset();
-                mAudioPlayer = null;
-                initialisePlayer();
+                mAudioPlayer!!.reset()
+                mAudioPlayer = null
+                initialisePlayer()
             }
-        } else
-            Log.v(LOG_TAG, "wasn't playing");
-
-        getLoaderManager().initLoader(AUDIO_LOADER_ID, null, this);
+        } else Log.v(LOG_TAG, "wasn't playing")
+        loaderManager.initLoader(AUDIO_LOADER_ID, null, this)
     }
 
-    @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
-        View audioRoot = inflater.inflate(R.layout.fragment_audio, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         // Inflate the layout for this fragment
-        return audioRoot;
+        _binding = FragmentAudioBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Set the {@link audioAdapter} ArrayAdapter on the ListView
-        ListView lvAudio = (ListView) view.findViewById(R.id.lv_audio);
-        lvAudio.setAdapter(audioAdapter);
-
-        lvAudio.setOnItemClickListener(this);
+        val lvAudio = view.findViewById<View>(R.id.lv_audio) as ListView
+        lvAudio.adapter = audioAdapter
+        lvAudio.onItemClickListener = this
 
         // definition of #OnAudioFocusChangeListener for the audio player
-        audioFocus = new AudioManager.OnAudioFocusChangeListener() {
-            @Override
-            public void onAudioFocusChange (int focusChange) {
-                switch (focusChange) {
-
-                    // Focus gain, with expectation previous holder stops playback
-                    // AUDIOFOCUS_REQUEST_GRANTED OR AUDIOFOCUS_REQUEST_DELAYED
-                    case AudioManager.AUDIOFOCUS_GAIN:
-                        // Focus gain, with expectation of releasing focus momentarily
-                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+        audioFocus = object : OnAudioFocusChangeListener {
+            override fun onAudioFocusChange(focusChange: Int) {
+                when (focusChange) {
+                    AudioManager.AUDIOFOCUS_GAIN, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT -> {
                         // Set the volume to "normal level" and start playback
-                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
-                        if (mAudioPlayer == null)
-                            initialisePlayer();
-                        else
-                            mAudioPlayer.setVolume(1f, 1f);
-                        playAudioFile();
-                        break;
-
-                    // Focus gain, with expectation of releasing focus momentarily, allowing others
-                    // to 'duck'
-                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri)
+                        if (mAudioPlayer == null) initialisePlayer() else mAudioPlayer!!.setVolume(
+                            1f,
+                            1f
+                        )
+                        playAudioFile()
+                    }
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK -> {
                         // Pause playback -- Lowering volume at this stage could be detrimental to
                         // information inculcation; I'm working with podcasts eventually.
-                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri);
-                        if (isPlaying())
-                            pausePlayback();
-                        break;
-
-                    // Focus loss, with expectation of re-gaining momentarily and ducking respectively
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        // Pause playback.
-                        if (isPlaying())
-                            pausePlayback();
-                        break;
-
-                    // Focus loss, without expectation of getting soon or ever
-                    case AudioManager.AUDIOFOCUS_LOSS:
-                        // Stop playback and abandon audio focus
-                        // Focus gain, with expectation of releasing focus momentarily, disabling all other playback (system & app)
-                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
+                        Log.v(LOG_TAG, "ContentUris method: " + mCurrentAudioUri)
+                        if (isPlaying) pausePlayback()
+                    }
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK ->                         // Pause playback.
+                        if (isPlaying) pausePlayback()
+                    AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE -> {
                         // do not play -- abandon audio focus
-                        Log.v(LOG_TAG, "FOCUS LOSS");
-                        stopPlayback();
-                        break;
-                    default:
+                        Log.v(LOG_TAG, "FOCUS LOSS")
+                        stopPlayback()
+                    }
+                    else -> {}
                 }
             }
-        };
-
-        getLoaderManager().restartLoader(AUDIO_LOADER_ID, null, this);
+        }
+        loaderManager.restartLoader(AUDIO_LOADER_ID, null, this)
     }
 
     /**
-     * A callback method that takes the @param parent {@link AdapterView} object,
+     * A callback method that takes the @param parent [AdapterView] object,
      * the list item @param view,
      *
      * @param position of the list item view in the list view,
-     *                 the int @param id of the view
-     *                 that has been clicked on.
+     * the int @param id of the view
+     * that has been clicked on.
      */
-    @Override
-    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+    override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
         // TODO: Implement #requestAudioFocus(AudioFocusRequest) for SDK >= Android OREO later
         //  "Note that the return value is never {@link #AUDIOFOCUS_REQUEST_DELAYED} when focus
         //     *     is requested without building the {@link AudioFocusRequest} with
         //     *     {@link AudioFocusRequest.Builder#setAcceptsDelayedFocusGain(boolean)} set to
         //     *     {@code true}." -- Documentation
-        int focus = audioPlayManager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
-        switch (focus) {
-            // start playback if audio focus is granted
-            case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
-                mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id);
-                initialisePlayer();
-                playAudioFile();
-                break;
-            case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
-                stopPlayback();
-                break;
+        val focus = audioPlayManager!!.requestAudioFocus(
+            audioFocus, AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN
+        )
+        when (focus) {
+            AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
+                mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri, id)
+                initialisePlayer()
+                playAudioFile()
+            }
+            AudioManager.AUDIOFOCUS_REQUEST_FAILED -> stopPlayback()
         }
     }
 
-    public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
-
-        String[] mAudioTableColumns = new String[]{MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.DATA
-        };
-        String mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
-                MediaStore.Audio.Media.IS_PODCAST;
+    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<Cursor?> {
+        val mAudioTableColumns = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DATA
+        )
+        val mAudioSelection = MediaStore.Audio.Media.IS_MUSIC + " OR " +
+                MediaStore.Audio.Media.IS_PODCAST
         // TODO: present option in preferences
-        String mAudioSortOrder = MediaStore.Audio.Media.TITLE + " ASC";
-
-        return new CursorLoader(getActivity().getApplicationContext(), mAudioUri,
-                mAudioTableColumns, mAudioSelection, null, mAudioSortOrder);
+        val mAudioSortOrder = MediaStore.Audio.Media.TITLE + " ASC"
+        return CursorLoader(
+            requireActivity().applicationContext, mAudioUri,
+            mAudioTableColumns, mAudioSelection, null, mAudioSortOrder
+        )
     }
 
-    @Override
-    public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
-        if (cursor != null && cursor.getCount() > 0) {
-            mAudioCursor = cursor;
-            audioAdapter.swapCursor(mAudioCursor);
+    override fun onLoadFinished(loader: Loader<Cursor?>, cursor: Cursor?) {
+        if (cursor != null && cursor.count > 0) {
+            mAudioCursor = cursor
+            audioAdapter!!.swapCursor(mAudioCursor)
         }
-
     }
 
-    @Override
-    public void onLoaderReset (Loader<Cursor> loader) {
-        audioAdapter.swapCursor(null);
+    override fun onLoaderReset(loader: Loader<Cursor?>) {
+        audioAdapter!!.swapCursor(null)
     }
 
     /**
-     * Show the {@link MediaControlsFragment} child fragment when an audio file is played
+     * Show the [MediaControlsFragment] child fragment when an audio file is played
      */
-    private void showControlsFragment () {
-        if (this.isResumed()) {
-            childrenManager = getChildFragmentManager();
-            channel = childrenManager.beginTransaction();
-            if (controlsFragment.isAdded())
-                channel.show(controlsFragment);
-            else
-                channel.add(R.id.controls_container, controlsFragment);
-
-            channel.commit();
+    private fun showControlsFragment() {
+        if (this.isResumed) {
+            childrenManager = childFragmentManager
+            channel = childrenManager!!.beginTransaction()
+            if (controlsFragment!!.isAdded) channel!!.show(controlsFragment!!) else channel!!.add(
+                R.id.controls_container,
+                controlsFragment!!
+            )
+            channel!!.commit()
         }
     }
 
     /**
-     * Utility method to remove the {@link MediaControlsFragment} child fragment.
+     * Utility method to remove the [MediaControlsFragment] child fragment.
      */
-    private void hideControlsFragment () {
-        channel = childrenManager.beginTransaction();
-        channel.remove(controlsFragment);
-        controlsFragment = null;
-
-        if (this.isVisible())
-            channel.commit();
+    private fun hideControlsFragment() {
+        channel = childrenManager!!.beginTransaction()
+        channel!!.remove(controlsFragment!!)
+        controlsFragment = null
+        if (this.isVisible) channel!!.commit()
     }
     // TODO: Implement LiveData + ViewModel - to handle click events on the
     //  child fragment's views.
     //  Also use it to handle playback across Fragments.
-
     /**
      * A method to initialise the #mAudioPlayer object if it is not already instantiated
      */
-    protected void initialisePlayer () {
+    protected fun initialisePlayer() {
         if (mAudioPlayer != null) {
-            Log.v(LOG_TAG, "init not null");
+            Log.v(LOG_TAG, "init not null")
             // reset the {@link MediaPlayer} object
-            mAudioPlayer.reset();
+            mAudioPlayer!!.reset()
             try {
                 // change data source to a different file at {@link path}
-                mAudioPlayer.setDataSource(mAppContext, mCurrentAudioUri);
+                mAudioPlayer!!.setDataSource(mAppContext!!, mCurrentAudioUri!!)
 
                 // transition to prepared state
-                mAudioPlayer.prepare();
-            } catch (IOException ioE) {
-                ioE.printStackTrace();
+                mAudioPlayer!!.prepare()
+            } catch (ioE: IOException) {
+                ioE.printStackTrace()
             }
-            return;
+            return
         }
-        Log.v(LOG_TAG, "init null");
+        Log.v(LOG_TAG, "init null")
         // instantiate the {@link mAudioPlayer} object
-        mAudioPlayer = new MediaPlayer();
+        mAudioPlayer = MediaPlayer()
 
         // register callback methods for the {@link mAudioPlayer} object
+        mAudioPlayer!!.setOnCompletionListener { // TODO: check if Fragment is visible to user first, then make this call to hide the
+            //  controls fragment or postpone it till onResumed()
 
-        mAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            /**
-             * A callback method to handle {@link Audio} file completions.
-             * Takes the {@link MediaPlayer=mAudioPlayer} object as @param mp
-             */
-            @Override
-            public void onCompletion (MediaPlayer mp) {
-                // TODO: check if Fragment is visible to user first, then make this call to hide the
-                //  controls fragment or postpone it till onResumed()
-
-                // release resources, hide {@link MediaControlsFragment} if this {@link Fragment}
-                // is in the #onResumed state.
-                Log.v(LOG_TAG, "onCompletion.");
-                stopPlayback();
+            // release resources, hide {@link MediaControlsFragment} if this {@link Fragment}
+            // is in the #onResumed state.
+            Log.v(LOG_TAG, "onCompletion.")
+            stopPlayback()
+        }
+        mAudioPlayer!!.setOnErrorListener(MediaPlayer.OnErrorListener { mp, what, extra ->
+            when (what) {
+                MediaPlayer.MEDIA_ERROR_UNKNOWN -> Log.v(LOG_TAG, "Media Error Unknown")
+                MediaPlayer.MEDIA_ERROR_SERVER_DIED -> Log.v(LOG_TAG, "Media Error Server Died")
+                else -> Log.v(LOG_TAG, "Media Error what: $what")
             }
-        });
-
-        mAudioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError (MediaPlayer mp, int what, int extra) {
-
-                switch (what) {
-                    case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                        Log.v(LOG_TAG, "Media Error Unknown");
-                        break;
-                    case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                        Log.v(LOG_TAG, "Media Error Server Died");
-                        break;
-                    default:
-                        Log.v(LOG_TAG, "Media Error what: " + what);
-                }
-
-                switch (extra) {
-                    case MediaPlayer.MEDIA_ERROR_IO:
-                        Log.v(LOG_TAG, "Media Error IO");
-                        break;
-                    case MediaPlayer.MEDIA_ERROR_MALFORMED:
-                        Log.v(LOG_TAG, "Media Error Malformed");
-                        break;
-                    case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                        Log.v(LOG_TAG, "Media Error Unsupported");
-                        break;
-                    case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                        Log.v(LOG_TAG, "Media Error Timed Out");
-                        break;
-                    default:
-                        Log.v(LOG_TAG, "Media Error extra: " + extra);
-                }
-
-                if (mp != null) {
-                    Log.v(LOG_TAG, "onError");
-                    mp.reset();
-                    hideControlsFragment();
-
-                    // Successfully handled error
-                    return true;
-                }
-
-                // Unsuccessfully handled error
-                mp.reset();
-                Log.v(LOG_TAG, "Error handled unsuccessfully.");
-                return false;
+            when (extra) {
+                MediaPlayer.MEDIA_ERROR_IO -> Log.v(LOG_TAG, "Media Error IO")
+                MediaPlayer.MEDIA_ERROR_MALFORMED -> Log.v(LOG_TAG, "Media Error Malformed")
+                MediaPlayer.MEDIA_ERROR_UNSUPPORTED -> Log.v(LOG_TAG, "Media Error Unsupported")
+                MediaPlayer.MEDIA_ERROR_TIMED_OUT -> Log.v(LOG_TAG, "Media Error Timed Out")
+                else -> Log.v(LOG_TAG, "Media Error extra: $extra")
             }
-        });
+            if (mp != null) {
+                Log.v(LOG_TAG, "onError")
+                mp.reset()
+                hideControlsFragment()
+
+                // Successfully handled error
+                return@OnErrorListener true
+            }
+
+            // Unsuccessfully handled error
+            mp?.reset()
+            Log.v(LOG_TAG, "Error handled unsuccessfully.")
+            false
+        })
     }
 
     /**
@@ -375,28 +294,29 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      * If #controlsFragment is not null, call #hideControlsFragment to remove it, then create a new
      * instance and start playing.
      */
-    protected void playAudioFile () {
+    fun playAudioFile() {
         if (mAudioPlayer != null) {
-            Log.v(LOG_TAG, "mAudioPlayer not null in #playAudioFile.");
-
+            Log.v(LOG_TAG, "mAudioPlayer not null in #playAudioFile.")
             if (controlsFragment != null) {
                 if (mCurrentAudioUri != null) {
-                    showControlsFragment();
-                } else
-                    hideControlsFragment();
+                    showControlsFragment()
+                } else hideControlsFragment()
             } else {
                 // get a new instance of {@link MediaControlsFragment}, setting title and duration of the
                 //  audio item to the object
-                controlsFragment = MediaControlsFragment.newInstance(mAudioCursor.getString(
-                        mAudioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                        Long.parseLong(mAudioCursor.getString(
-                                mAudioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+                controlsFragment = MediaControlsFragment.newInstance(
+                    mAudioCursor!!.getString(
+                        mAudioCursor!!.getColumnIndex(MediaStore.Audio.Media.TITLE)
+                    ), mAudioCursor!!.getString(
+                        mAudioCursor!!.getColumnIndex(MediaStore.Audio.Media.DURATION)
+                    ).toLong()
+                )
 
                 // show the {@link MediaControlsFragment} Fragment
-                showControlsFragment();
+                showControlsFragment()
             }
             // start playing the audio file
-            mAudioPlayer.start();
+            mAudioPlayer!!.start()
         }
     }
 
@@ -405,33 +325,31 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
      *
      * @return #mAudioPlayer state
      */
-    protected boolean isPlaying () {
-        if (mAudioPlayer != null) {
-            if (mAudioPlayer.isPlaying())
-                return true;
+    val isPlaying: Boolean
+        get() {
+            if (mAudioPlayer != null) {
+                if (mAudioPlayer!!.isPlaying) return true
+            }
+            return false
         }
-        return false;
-    }
-
     // TODO: Use ternary operator for short, non-complex lines.
-
     /**
      * A method to pause playback of the #mAudioPlayer object.
      */
-    protected void pausePlayback () {
+    fun pausePlayback() {
         if (mAudioPlayer != null) {
-            mPosition = mAudioPlayer.getCurrentPosition();
-            mAudioPlayer.pause();
+            mPosition = mAudioPlayer!!.currentPosition
+            mAudioPlayer!!.pause()
         }
     }
 
     /**
      * A method to resume playback of the #mAudioPlayer object.
      */
-    private void resumePlayback () {
+    private fun resumePlayback() {
         if (mAudioPlayer != null && mPosition > 0) {
-            mAudioPlayer.seekTo(mPosition);
-            mAudioPlayer.start();
+            mAudioPlayer!!.seekTo(mPosition)
+            mAudioPlayer!!.start()
         } else {
 //            initialisePlayer();
 //            resumePlayback();
@@ -441,86 +359,104 @@ public class AudioFragment extends Fragment implements AdapterView.OnItemClickLi
     /**
      * Stop playback and release resources hoarded by #mAudioPlayer.
      */
-    protected void stopPlayback () {
+    fun stopPlayback() {
         if (mAudioPlayer != null) {
-            Log.v(LOG_TAG, "Not NULL!");
-            mAudioPlayer.reset();
-            mAudioPlayer.release();
-            mAudioPlayer = null;
-            audioPlayManager.abandonAudioFocus(audioFocus);
+            Log.v(LOG_TAG, "Not NULL!")
+            mAudioPlayer!!.reset()
+            mAudioPlayer!!.release()
+            mAudioPlayer = null
+            audioPlayManager!!.abandonAudioFocus(audioFocus)
         }
         // TODO: Consider calling #hideControlsFragment here.
-        if (this.isVisible() && this.isResumed() /*isVisible() wasn't enough during testing*/ && controlsFragment != null)
-            getChildFragmentManager().beginTransaction().hide(controlsFragment).commit();
+        if (this.isVisible && this.isResumed && controlsFragment != null) childFragmentManager.beginTransaction()
+            .hide(
+                controlsFragment!!
+            ).commit()
     }
 
-    protected void fastForward () {
-        if (isPlaying()) {
-            mAudioPlayer.seekTo(mAudioPlayer.getCurrentPosition() + 10000);
+    fun fastForward() {
+        if (isPlaying) {
+            mAudioPlayer!!.seekTo(mAudioPlayer!!.currentPosition + 10000)
         }
     }
 
-    protected void rewind () {
-        if (isPlaying()) {
-            mAudioPlayer.seekTo(mAudioPlayer.getCurrentPosition() - 10000);
+    fun rewind() {
+        if (isPlaying) {
+            mAudioPlayer!!.seekTo(mAudioPlayer!!.currentPosition - 10000)
         }
     }
 
-    protected void previousTrack () {
+    fun previousTrack() {
         if (mAudioPlayer != null) {
-
             try {
                 // Move to previous audio file in generated cursor/table, if there's one before
                 // current file/track.
-                boolean previousExists = mAudioCursor.moveToPrevious();
-
+                val previousExists = mAudioCursor!!.moveToPrevious()
                 if (previousExists) {
                     // Set #mCurrentAudioUri to the current row of #mAudioCursor
-                    mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
-                            ContentUris.parseId(Uri.parse(mAudioCursor.getString(
-                                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
-                                    )
+                    mCurrentAudioUri = ContentUris.withAppendedId(
+                        mAudioUri,
+                        ContentUris.parseId(
+                            Uri.parse(
+                                mAudioCursor!!.getString(
+                                    mAudioCursor!!.getColumnIndex(MediaStore.Audio.Media._ID)
+                                )
                             )
-                    );
-                } else // Otherwise return to track originally being played.
-                    mAudioCursor.moveToNext();
-            } catch (CursorIndexOutOfBoundsException cursorException) {
+                        )
+                    )
+                } else  // Otherwise return to track originally being played.
+                    mAudioCursor!!.moveToNext()
+            } catch (cursorException: CursorIndexOutOfBoundsException) {
                 // TODO: Display a Toast/Snackbar if there's such error.
             }
 
             // Re-initialise the {@link MediaPlayer} object #mAudioPlayer, and start playing previous
             // audio file/track.
-            initialisePlayer();
-            playAudioFile();
+            initialisePlayer()
+            playAudioFile()
         }
     }
 
-    protected void nextTrack () {
+    fun nextTrack() {
         if (mAudioPlayer != null) {
-
             try {
                 // Move to next audio file in generated cursor/table, if there's one after current
                 // file/track.
-                boolean nextExists = mAudioCursor.moveToNext();
-
+                val nextExists = mAudioCursor!!.moveToNext()
                 if (nextExists) {
                     // Set #mCurrentAudioUri to the current row of #mAudioCursor
-                    mCurrentAudioUri = ContentUris.withAppendedId(mAudioUri,
-                            ContentUris.parseId(Uri.parse(mAudioCursor.getString(
-                                    mAudioCursor.getColumnIndex(MediaStore.Audio.Media._ID))
-                                    )
+                    mCurrentAudioUri = ContentUris.withAppendedId(
+                        mAudioUri,
+                        ContentUris.parseId(
+                            Uri.parse(
+                                mAudioCursor!!.getString(
+                                    mAudioCursor!!.getColumnIndex(MediaStore.Audio.Media._ID)
+                                )
                             )
-                    );
-                } else // Otherwise return to track originally being played.
-                    mAudioCursor.moveToPrevious();
-            } catch (CursorIndexOutOfBoundsException cursorException) {
+                        )
+                    )
+                } else  // Otherwise return to track originally being played.
+                    mAudioCursor!!.moveToPrevious()
+            } catch (cursorException: CursorIndexOutOfBoundsException) {
                 // TODO: Display a Toast/Snackbar if there's such error.
             }
 
             // Re-initialise the {@link MediaPlayer} object #mAudioPlayer, and start playing next
             // audio file/track.
-            initialisePlayer();
-            playAudioFile();
+            initialisePlayer()
+            playAudioFile()
         }
+    }
+
+    companion object {
+        private const val AUDIO_LOADER_ID = 3
+        private val LOG_TAG = AudioFragment::class.java.name
+        private val mAudioUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        private var mCurrentAudioUri: Uri? = null
+        private var mAppContext: Context? = null
+        private var mAudioCursor: Cursor? = null
+        private var mAudioPlayer: MediaPlayer? = null
+        private var mPosition = 0
+        private var audioPlayManager: AudioManager? = null
     }
 }

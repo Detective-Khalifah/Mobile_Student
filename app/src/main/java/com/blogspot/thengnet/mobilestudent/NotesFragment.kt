@@ -1,130 +1,127 @@
-package com.blogspot.thengnet.mobilestudent;
+package com.blogspot.thengnet.mobilestudent
 
-import android.content.ContentUris;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.fragment.app.Fragment;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-
-import com.blogspot.thengnet.mobilestudent.data.NoteContract;
+import android.content.ContentUris
+import android.content.Intent
+import android.database.Cursor
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.ListView
+import android.widget.ProgressBar
+import androidx.fragment.app.Fragment
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
+import com.blogspot.thengnet.mobilestudent.data.NoteContract
+import com.blogspot.thengnet.mobilestudent.databinding.FragmentNotesBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple [Fragment] subclass.
  */
-public class NotesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+class NotesFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int NOTES_ACTIVITY_LOADER = 105;
-    ProgressBar pbLoadingNotes;
-    private FloatingActionButton fabNewNote;
-    private NotesCursorAdapter mNoteCursorAdapter;
+    private var _binding: FragmentNotesBinding? = null
 
-    public NotesFragment () {
-        // Required empty public constructor
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
+
+    var pbLoadingNotes: ProgressBar? = null
+    private var fabNewNote: FloatingActionButton? = null
+    private var mNoteCursorAdapter: NotesCursorAdapter? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mNoteCursorAdapter = NotesCursorAdapter(context, null)
     }
 
-    @Override
-    public void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mNoteCursorAdapter = new NotesCursorAdapter(getContext(), null);
-    }
-
-    @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
-        View notesView = inflater.inflate(R.layout.fragment_notes, container, false);
-
-        return notesView;
+        _binding = FragmentNotesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        pbLoadingNotes = (ProgressBar) view.findViewById(R.id.pb_loading_notes);
-
-        fabNewNote = (FloatingActionButton) view.findViewById(R.id.fab_new_note);
-        fabNewNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-                startActivity(new Intent(getActivity().getApplicationContext(), NotesEditor.class));
-            }
-        });
-
-        ListView notesList = (ListView) view.findViewById(R.id.notes_list);
-
-        notesList.setAdapter(mNoteCursorAdapter);
-
-        notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                showProgress();
-                startActivity(new Intent(getContext(), NotesViewer.class)
-                        .setData(ContentUris.withAppendedId(
-                                NoteContract.NoteEntry.CONTENT_URI, id))); // content uri of the clicked #NoteEntry
-            }
-        });
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        pbLoadingNotes = view.findViewById<View>(R.id.pb_loading_notes) as ProgressBar
+        fabNewNote = view.findViewById<View>(R.id.fab_new_note) as FloatingActionButton
+        fabNewNote!!.setOnClickListener {
+            startActivity(
+                Intent(
+                    requireActivity().applicationContext,
+                    NotesEditor::class.java
+                )
+            )
+        }
+        val notesList = view.findViewById<View>(R.id.notes_list) as ListView
+        notesList.adapter = mNoteCursorAdapter
+        notesList.onItemClickListener = OnItemClickListener { parent, view, position, id ->
+            showProgress()
+            startActivity(
+                Intent(context, NotesViewer::class.java)
+                    .setData(
+                        ContentUris.withAppendedId(
+                            NoteContract.NoteEntry.CONTENT_URI, id
+                        )
+                    )
+            ) // content uri of the clicked #NoteEntry
+        }
 
         // Set a #OnItemLongClickListener handler to start {@link NotesEditor} Activity when a Note
         // is long clicked.
-        notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick (AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getContext(), NotesEditor.class)
-                        .setData(ContentUris.withAppendedId(
-                                NoteContract.NoteEntry.CONTENT_URI, id)));
-                return true;
-            }
-        });
-
-        getLoaderManager().initLoader(NOTES_ACTIVITY_LOADER, null, this);
+        notesList.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
+            startActivity(
+                Intent(context, NotesEditor::class.java)
+                    .setData(
+                        ContentUris.withAppendedId(
+                            NoteContract.NoteEntry.CONTENT_URI, id
+                        )
+                    )
+            )
+            true
+        }
+        loaderManager.initLoader(NOTES_ACTIVITY_LOADER, null, this)
     }
 
-    public Loader<Cursor> onCreateLoader (int i, Bundle bundle) {
-        String[] projection = {
-                NoteContract.NoteEntry._ID,
-                NoteContract.NoteEntry.COLUMN_NOTE_TITLE,
-                NoteContract.NoteEntry.COLUMN_NOTE_CONTENT,
-                NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE
-        };
-        String whereClause = null;
-        String[] whereArgs = null;
-
-        showProgress();
-        return new CursorLoader(getContext(), NoteContract.NoteEntry.CONTENT_URI,
-                projection, whereClause, whereArgs, null);
+    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<Cursor> {
+        val projection = arrayOf(
+            NoteContract.NoteEntry._ID,
+            NoteContract.NoteEntry.COLUMN_NOTE_TITLE,
+            NoteContract.NoteEntry.COLUMN_NOTE_CONTENT,
+            NoteContract.NoteEntry.COLUMN_NOTE_PREVIOUS_UPDATE
+        )
+        val whereClause: String? = null
+        val whereArgs: Array<String>? = null
+        showProgress()
+        return CursorLoader(
+            requireContext(), NoteContract.NoteEntry.CONTENT_URI,
+            projection, whereClause, whereArgs, null
+        )
     }
 
-    @Override
-    public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
-        hideProgress();
-        mNoteCursorAdapter.swapCursor(cursor);
+    override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor) {
+        hideProgress()
+        mNoteCursorAdapter!!.swapCursor(cursor)
     }
 
-    @Override
-    public void onLoaderReset (Loader<Cursor> loader) {
-        mNoteCursorAdapter.swapCursor(null);
+    override fun onLoaderReset(loader: Loader<Cursor>) {
+        mNoteCursorAdapter!!.swapCursor(null)
     }
 
-    private void showProgress () {
-        pbLoadingNotes.setVisibility(View.VISIBLE);
+    private fun showProgress() {
+        pbLoadingNotes!!.visibility = View.VISIBLE
     }
 
-    private void hideProgress () {
-        pbLoadingNotes.setVisibility(View.GONE);
+    private fun hideProgress() {
+        pbLoadingNotes!!.visibility = View.GONE
+    }
+
+    companion object {
+        private const val NOTES_ACTIVITY_LOADER = 105
     }
 }

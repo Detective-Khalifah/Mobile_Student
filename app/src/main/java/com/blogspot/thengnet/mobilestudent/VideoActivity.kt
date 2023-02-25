@@ -1,133 +1,120 @@
-package com.blogspot.thengnet.mobilestudent;
+package com.blogspot.thengnet.mobilestudent
 
-import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
+import android.media.MediaPlayer.OnCompletionListener
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.view.View
+import android.widget.MediaController
+import android.widget.Toast
+import android.widget.VideoView
+import androidx.appcompat.app.AppCompatActivity
+import com.blogspot.thengnet.mobilestudent.databinding.ActivityVideoBinding
 
-import androidx.appcompat.app.AppCompatActivity;
+class VideoActivity : AppCompatActivity() {
 
-import android.os.Bundle;
-import android.widget.MediaController;
-import android.widget.Toast;
-import android.widget.VideoView;
+    private lateinit var binding: ActivityVideoBinding
 
-public class VideoActivity extends AppCompatActivity {
+    private var mVideoPosition = 0
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    private static final String LOG_TAG = VideoActivity.class.getName();
-    private static final String PLAYBACK_TIME = "play_time";
-    private int mVideoPosition = 0;
-
-    private static Uri path;
-    private VideoView mVideoView;
-
-    @Override
-    protected void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video);
+        binding = ActivityVideoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // get path to video file from #Intent that launched this #Activity
-        Intent videoToPlay = getIntent();
-        path = videoToPlay.getData();
-
-        mVideoView = (VideoView) findViewById(R.id.videoview);
-
-        MediaController mediaController = new MediaController(this);
-//        mediaController.setMediaPlayer(mVideoView);
-
-        mVideoView.setMediaController(mediaController);
-
+        val videoToPlay = intent
+        path = videoToPlay.data
+        val mediaController = MediaController(this)
+        //        mediaController.setMediaPlayer(mVideoView);
+        binding.videoview.setMediaController(mediaController)
         if (savedInstanceState != null) {
-            mVideoPosition = savedInstanceState.getInt(PLAYBACK_TIME);
+            mVideoPosition = savedInstanceState.getInt(PLAYBACK_TIME)
         }
-
-        startPlayback();
+        startPlayback()
 
         // TODO: Implement {@link AudioFocusRequest, AudioAttributes}, whatever and learn Services
         //  as soon as possible; OnAudioFocusChangeListener & AudioManager worked poorly, unlike it
         //  did with {@link AudioFragment}.
     }
 
-    @Override
-    protected void onStart () {
-        super.onStart();
-
-        initialisePlayer();
+    override fun onStart() {
+        super.onStart()
+        initialisePlayer()
     }
 
-    @Override
-    protected void onPause () {
-        super.onPause();
+    override fun onPause() {
+        super.onPause()
 
         // Pause video if this activity is covered by another component on Android versions before
         // 7 (Nougat), and don't pause otherwise. This is due to features like "split screen" on
         // Android versions starting from Nougat; in such cases, #onPause() is called even though
         // Activity is active, in #onResume() lifecycle stage.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            mVideoView.pause();
+            binding.videoview.pause()
         }
     }
 
-    @Override
-    protected void onStop () {
-        super.onStop();
-
-        stopPlayback();
+    override fun onStop() {
+        super.onStop()
+        stopPlayback()
     }
 
-    @Override
-    protected void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
 
         // Save current position of the video being played when Activity goes off-screen.
-        outState.putInt(PLAYBACK_TIME, mVideoView.getCurrentPosition());
+        outState.putInt(PLAYBACK_TIME, binding.videoview.currentPosition)
     }
 
     /**
-     * Set up the {@link VideoView} object with the path to video file
+     * Set up the [VideoView] object with the path to video file
      */
-    private void initialisePlayer () {
-        mVideoView.setVideoURI(path);
+    private fun initialisePlayer() {
+        binding.videoview.setVideoURI(path)
 
         // if position greater than 0 millis - file had started playing before - seek
         // {@link VideoView object to the last position.
         if (mVideoPosition > 0) {
-            mVideoView.seekTo(mVideoPosition);
+            binding.videoview.seekTo(mVideoPosition)
         } else {
             // Skipping to 1 shows the first frame of the video.
-            mVideoView.seekTo(1);
+            binding.videoview.seekTo(1)
         }
     }
 
     /**
-     * Start playback of the video if {@link VideoView} object is non-null and set
-     * {@link MediaPlayer.OnCompletionListener}, otherwise return without
+     * Start playback of the video if [VideoView] object is non-null and set
+     * [MediaPlayer.OnCompletionListener], otherwise return without
      * doing anything.
      */
-    private void startPlayback () {
-        if (mVideoView != null) {
-            mVideoView.start();
+    private fun startPlayback() {
+        if (binding.videoview != null) {
+            binding.videoview.start()
         } else {
-            return;
+            return
         }
 
         // set {@link MediaPlayer.OnCompletionListener} on the {@link VideoView} object.
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion (MediaPlayer mp) {
-                Toast.makeText(VideoActivity.this, "Playback completed!",
-                        Toast.LENGTH_SHORT).show();
-                mVideoView.seekTo(1);
-            }
-        });
+        binding.videoview.setOnCompletionListener {
+            Toast.makeText(
+                this@VideoActivity, "Playback completed!",
+                Toast.LENGTH_SHORT
+            ).show()
+            binding.videoview.seekTo(1)
+        }
     }
 
     /**
      * Stop the video -- reset to 0 seconds, if the #mVideoView object is non-null.
      */
-    private void stopPlayback () {
-        if (mVideoView != null)
-            mVideoView.stopPlayback();
+    private fun stopPlayback() {
+        binding.videoview?.stopPlayback()
     }
 
+    companion object {
+        private val LOG_TAG = VideoActivity::class.java.name
+        private const val PLAYBACK_TIME = "play_time"
+        private var path: Uri? = null
+    }
 }

@@ -1,29 +1,17 @@
-package com.blogspot.thengnet.mobilestudent;
+package com.blogspot.thengnet.mobilestudent
 
-public class Audio {
+class Audio {
+    var audioTitle: String? = null
+        private set
+    var audioPath: String? = null
+        private set
+    var audioLength: String? = null
+        private set
 
-    private String mAudioTitle;
-    private String mAudioPath;
-    private String mAudioLength;
-
-    public Audio () {
-    }
-
-    public Audio (String theAudioTitle, String theAudioPath, String theAudioLength) {
-        this.mAudioTitle = theAudioTitle;
-        this.mAudioPath = theAudioPath;
-        this.mAudioLength = theAudioLength;
-    }
-
-    public String getAudioTitle () {
-        return mAudioTitle;
-    }
-
-    public String getAudioLength () {
-        return mAudioLength;
-    }
-
-    public String getAudioPath () {
-        return mAudioPath;
+    constructor() {}
+    constructor(theAudioTitle: String?, theAudioPath: String?, theAudioLength: String?) {
+        audioTitle = theAudioTitle
+        audioPath = theAudioPath
+        audioLength = theAudioLength
     }
 }

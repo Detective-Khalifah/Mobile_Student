@@ -1,140 +1,148 @@
-package com.blogspot.thengnet.mobilestudent;
+package com.blogspot.thengnet.mobilestudent
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
+import com.blogspot.thengnet.mobilestudent.databinding.FragmentMediaBinding
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple [Fragment] subclass.
  */
-public class MediaFragment extends Fragment {
+class MediaFragment : Fragment() {
+
+    private var _binding: FragmentMediaBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     // arbitrary code value to match permission request code
-    private final int EXTERNAL_STORAGE_PERMISSION_CODE = 12;
-
-    MediaCategoryAdapter pageAdapter;
-    private Button btnStorageAccess;
-    private TextView tvStorageAccessExplanation;
-
-    public MediaFragment () {
-        // Required empty public constructor
+    private val EXTERNAL_STORAGE_PERMISSION_CODE = 12
+    var pageAdapter: MediaCategoryAdapter? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        pageAdapter = MediaCategoryAdapter(fragmentManager, context)
     }
 
-    @Override
-    public void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        pageAdapter = new MediaCategoryAdapter(getFragmentManager(), getContext());
-    }
-
-    @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
-        View mediaView = inflater.inflate(R.layout.fragment_media, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         // Inflate the layout for this fragment
-        return mediaView;
+        _binding = FragmentMediaBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated (final View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        boolean hasStorageAccess = checkStorageAccess(view.getContext());
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val hasStorageAccess = checkStorageAccess(view.context)
 
         // find the views explaining reason for, and enabling permission grant
-        btnStorageAccess = view.findViewById(R.id.btn_external_storage_access);
-        tvStorageAccessExplanation = view.findViewById(R.id.tv_external_storage_access);
-
         if (hasStorageAccess) {
-            hideRationale();
-            setupMediaFragments(view);
+            hideRationale()
+            setupMediaFragments(view)
         } else {
-            showRationale();
-
-            btnStorageAccess.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick (View v) {
-                    requestStorageAccess(view.getContext());
-                }
-            });
+            showRationale()
+            binding.btnExternalStorageAccess.setOnClickListener(View.OnClickListener {
+                requestStorageAccess(
+                    view.context
+                )
+            })
         }
     }
 
-    private void showRationale () {
+    private fun showRationale() {
         // make the views available if app has storage access permission denied -- not granted
-        btnStorageAccess.setVisibility(View.VISIBLE);
-        tvStorageAccessExplanation.setVisibility(View.VISIBLE);
+        binding.btnExternalStorageAccess.visibility = View.VISIBLE
+        binding.tvExternalStorageAccess.visibility = View.VISIBLE
     }
 
-    private void setupMediaFragments (View rootView) {
-        ViewPager mediaPager = (ViewPager) rootView.findViewById(R.id.media_pager);
-        mediaPager.setAdapter(pageAdapter);
-
-        TabLayout mediaTabs = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        mediaTabs.setupWithViewPager(mediaPager);
+    private fun setupMediaFragments(rootView: View?) {
+        val mediaPager = rootView!!.findViewById<View>(R.id.media_pager) as ViewPager
+        mediaPager.adapter = pageAdapter
+        val mediaTabs = rootView.findViewById<View>(R.id.tab_layout) as TabLayout
+        mediaTabs.setupWithViewPager(mediaPager)
     }
 
-    private void hideRationale () {
+    private fun hideRationale() {
         // make the views unavailable if app has storage access permission granted
-        btnStorageAccess.setVisibility(View.GONE);
-        tvStorageAccessExplanation.setVisibility(View.GONE);
+        binding.btnExternalStorageAccess.visibility = View.GONE
+        binding.tvExternalStorageAccess.visibility = View.GONE
     }
 
-    private boolean checkStorageAccess (Context appContext) {
-        int permissionStatus = ContextCompat.checkSelfPermission(appContext, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        switch (permissionStatus) {
-            case PackageManager.PERMISSION_GRANTED:
-                return true;
-            case PackageManager.PERMISSION_DENIED:
-            default:
-                Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission not granted!", Snackbar.LENGTH_SHORT).show();
-                return false;
+    private fun checkStorageAccess(appContext: Context): Boolean {
+        val permissionStatus =
+            ContextCompat.checkSelfPermission(appContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+        return when (permissionStatus) {
+            PackageManager.PERMISSION_GRANTED -> true
+            PackageManager.PERMISSION_DENIED -> {
+                Snackbar.make(
+                    binding.mediaSnackbarFrame,
+                    "Permission not granted!",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                false
+            }
+            else -> {
+                Snackbar.make(
+                    binding.mediaSnackbarFrame,
+                    "Permission not granted!",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                false
+            }
         }
     }
 
-    private void requestStorageAccess (Context appContext) {
+    private fun requestStorageAccess(appContext: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String[] permissionSet = {Manifest.permission.READ_EXTERNAL_STORAGE};
-            requestPermissions(permissionSet, EXTERNAL_STORAGE_PERMISSION_CODE);
+            val permissionSet = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestPermissions(permissionSet, EXTERNAL_STORAGE_PERMISSION_CODE)
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == EXTERNAL_STORAGE_PERMISSION_CODE) {
-            if (grantResults.length > 0) {
+            if (grantResults.isNotEmpty()) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // TODO: Use a SnackBar to notify permission grant
-                    Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission Granted!", Snackbar.LENGTH_SHORT).show();
-                    hideRationale();
-                    setupMediaFragments(getView());
+                    Snackbar.make(
+                        binding.mediaSnackbarFrame,
+                        "Permission Granted!",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    hideRationale()
+                    setupMediaFragments(view)
                 } else {
-                    showRationale();
-                    Snackbar.make(getView().findViewById(R.id.media_snackbar_frame), "Permission Denied!", Snackbar.LENGTH_SHORT).show();
+                    showRationale()
+                    Snackbar.make(
+                        binding.mediaSnackbarFrame,
+                        "Permission Denied!",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         } else {
             // TODO: Check if user 'denied' permission more than once, and use #Intent to get user
             //  to Settings screen to enable permission manually.
-            return;
+            return
         }
     }
 }
