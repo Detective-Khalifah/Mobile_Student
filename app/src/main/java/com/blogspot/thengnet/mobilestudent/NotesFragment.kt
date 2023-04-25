@@ -49,8 +49,8 @@ class NotesFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         pbLoadingNotes = view.findViewById<View>(R.id.pb_loading_notes) as ProgressBar
-        fabNewNote = view.findViewById<View>(R.id.fab_new_note) as FloatingActionButton
-        fabNewNote!!.setOnClickListener {
+        fabNewNote = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        fabNewNote?.setOnClickListener {
             startActivity(
                 Intent(
                     requireActivity().applicationContext,

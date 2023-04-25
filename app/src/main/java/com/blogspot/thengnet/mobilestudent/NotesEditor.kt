@@ -33,22 +33,23 @@ class NotesEditor : AppCompatActivity() {
         if (mNoteUri != null) {
             noteDetails
         }
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_save -> {
-                //                InputMethodManager inputMM = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-//                inputMM.hideSoftInputFromInputMethod((IBinder) this, 0);
-                if (mNoteUri != null) {
-                    if (updateNote()) finish()
+        binding.topAppBar.setNavigationOnClickListener { finish() }
+
+        binding.topAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_save -> {
+                    if (mNoteUri != null) {
+                        if (updateNote()) finish()
+                    }
+                    if (saveNote()) finish()
                 }
-                if (saveNote()) finish()
+
+                else -> {}
             }
-            android.R.id.home -> finish()
-            else -> {}
+            true
         }
-        return super.onOptionsItemSelected(item)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,7 +77,7 @@ class NotesEditor : AppCompatActivity() {
                     // Fetch saved note title and set fetched text on the #editTitle
                     // {@link TextInputEditText}
                     previousTitle = currentNote.getString(
-                        currentNote.getColumnIndex(
+                        currentNote.getColumnIndexOrThrow(
                             NoteContract.NoteEntry.COLUMN_NOTE_TITLE
                         )
                     ).trim { it <= ' ' }
@@ -85,7 +86,7 @@ class NotesEditor : AppCompatActivity() {
                     // Fetch saved note content and set fetched text on the #editContent
                     // {@link TextInputEditText}
                     previousContent = currentNote.getString(
-                        currentNote.getColumnIndex(
+                        currentNote.getColumnIndexOrThrow(
                             NoteContract.NoteEntry.COLUMN_NOTE_CONTENT
                         )
                     ).trim { it <= ' ' }
