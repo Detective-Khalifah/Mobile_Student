@@ -6,6 +6,7 @@
         android:checked="false"
         android:enabled="true"
         android:title="@string/media_pages_label"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/baseline_perm_media_black_36"/>
 
     <item
@@ -13,10 +14,12 @@
         android:checked="true"
         android:enabled="true"
         android:title="@string/notes_activity_label"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/baseline_note_white_36"/>
     <item
         android:id="@+id/calculator_page"
         android:enabled="true"
         android:title="@string/calculator_activity_label"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/baseline_calculate_black_36" />
 </menu>

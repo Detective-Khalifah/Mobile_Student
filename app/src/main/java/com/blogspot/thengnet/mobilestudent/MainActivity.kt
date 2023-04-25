@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomappbar.BottomAppBar
 
 class MainActivity : AppCompatActivity() {
     var currentFragment: Fragment? = null
@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         calcFrag = SimpleCalculatorFragment()
         mediaFrag = MediaFragment()
         notesFrag = NotesFragment()
-        val bottomNavigationView =
-            findViewById<View>(R.id.bottom_navigation_view) as BottomNavigationView
+        val bottomAppBar =
+            findViewById<View>(R.id.bottomAppBar) as BottomAppBar
 
         // if a Fragment is already in view when #onStop got called, re-display it.
         if (savedInstanceState != null) {
@@ -33,10 +33,12 @@ class MainActivity : AppCompatActivity() {
                     currentFragment = calcFrag
                     displayCalculatorFrag()
                 }
+
                 "media-frag" -> {
                     currentFragment = mediaFrag
                     displayMediaFrag()
                 }
+
                 "notes-frag" -> {
                     currentFragment = notesFrag
                     displayNotesFrag()
@@ -46,20 +48,23 @@ class MainActivity : AppCompatActivity() {
             // Replace #FrameLayout content with {@link NotesFragment} at startup
             currentFragment = notesFrag
             displayNotesFrag()
-            bottomNavigationView.menu.getItem(1).isChecked = true
+            bottomAppBar.menu.getItem(1).isChecked = true
         }
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem -> // set the #currentFragment to {@link BottomNavigationView} item selected and display it
+        bottomAppBar.setOnMenuItemClickListener { menuItem ->
+            // set the #currentFragment to {@link BottomNavigationView} item selected and display it
             when (menuItem.itemId) {
                 R.id.media_page -> {
                     menuItem.isChecked = true
                     currentFragment = mediaFrag
                     displayMediaFrag()
                 }
+
                 R.id.notes_page -> {
                     menuItem.isChecked = true
                     currentFragment = notesFrag
                     displayNotesFrag()
                 }
+
                 R.id.calculator_page -> {
                     menuItem.isChecked = true
                     currentFragment = calcFrag
